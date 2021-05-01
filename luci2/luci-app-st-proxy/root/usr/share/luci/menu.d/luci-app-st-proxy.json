@@ -1,0 +1,14 @@
+{
+	"admin/services/st-proxy": {
+		"title": "ST-PROXY控制台",
+		"action": {
+			"type": "view",
+			"path": "st-proxy"
+		},
+		"depends": {
+			"acl": [
+				"luci-app-st-proxy"
+			]
+		}
+	}
+}

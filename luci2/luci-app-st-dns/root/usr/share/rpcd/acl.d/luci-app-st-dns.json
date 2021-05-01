@@ -1,0 +1,33 @@
+{
+	"luci-app-st-dns": {
+		"description": "Grant access to LuCI app st-dns",
+		"read": {
+			"uci": [
+				"st-dns"
+			],
+			"cgi-io": [ "exec" ],
+			"file": {
+				"/etc/st/dns/*": [
+					"read"
+				],
+				"/etc/config/st-dns": [
+					"read"
+				],
+				"/etc/init.d/st-dns" : [ "exec" ]
+			}
+		},
+		"write": {
+			"uci": [
+				"st-dns"
+			],
+			"file": {
+				"/etc/st/dns/*": [
+					"write"
+				],
+				"/etc/config/st-dns": [
+					"write"
+				]
+			}
+		}
+	}
+}

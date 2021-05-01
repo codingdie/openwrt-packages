@@ -1,0 +1,33 @@
+{
+	"luci-app-st-proxy": {
+		"description": "Grant access to LuCI app st-proxy",
+		"read": {
+			"uci": [
+				"st-proxy"
+			],
+			"cgi-io": [ "exec" ],
+			"file": {
+				"/etc/st/proxy/*": [
+					"read"
+				],
+				"/etc/config/st-proxy": [
+					"read"
+				],
+				"/etc/init.d/st-proxy" : [ "exec" ]
+			}
+		},
+		"write": {
+			"uci": [
+				"st-proxy"
+			],
+			"file": {
+				"/etc/st/proxy/*": [
+					"write"
+				],
+				"/etc/config/st-proxy": [
+					"write"
+				]
+			}
+		}
+	}
+}

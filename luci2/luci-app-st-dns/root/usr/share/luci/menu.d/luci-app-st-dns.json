@@ -1,0 +1,14 @@
+{
+	"admin/services/st-dns": {
+		"title": "ST-DNS控制台",
+		"action": {
+			"type": "view",
+			"path": "st-dns"
+		},
+		"depends": {
+			"acl": [
+				"luci-app-st-dns"
+			]
+		}
+	}
+}
