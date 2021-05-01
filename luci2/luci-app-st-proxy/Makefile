@@ -5,8 +5,8 @@
 
 include $(TOPDIR)/rules.mk
 
-LUCI_TITLE:=LuCI Support For st-dns
-LUCI_DEPENDS:=+st-dns
+LUCI_TITLE:=LuCI Support For st-proxy
+LUCI_DEPENDS:=+st-proxy
 
 include $(TOPDIR)/luci/luci.mk
 
