@@ -1,0 +1,17 @@
+{
+	"luci-app-extroot": {
+		"description": "Grant access to LuCI app samba4",
+		"read": {
+			"file": {
+				"/etc/extroot/extroot.conf": [ "read" ]
+			},
+			"uci": [ "extroot" ]
+		},
+		"write": {
+			"file": {
+				"/etc/extroot/extroot.conf": [ "write" ]
+			},
+			"uci": [ "extroot" ]
+		}
+	}
+}

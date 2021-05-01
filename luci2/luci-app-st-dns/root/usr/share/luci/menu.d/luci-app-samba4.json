@@ -1,0 +1,13 @@
+{
+	"admin/utils/extroot": {
+		"title": "System",
+		"action": {
+			"type": "view",
+			"path": "extroot"
+		},
+		"depends": {
+			"acl": [ "luci-app-extroot" ],
+			"uci": { "extroot": true }
+		}
+	}
+}

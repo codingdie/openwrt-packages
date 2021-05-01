@@ -1,1 +1,1 @@
-# openwrt-packages
+# st-dns-luci
