@@ -16,35 +16,6 @@
             "only_area_ip": true,
             "priority": 1,
             "real_server_host": "os2-1.sstr-api.xyz"
-        },
-        {
-            "type": "SOCKS",
-            "ip": "127.0.0.1",
-            "port": 1081,
-            "area": "!CN",
-            "only_area_ip": true,
-            "priority": 1,
-            "real_server_host": "os2-2.sstr-api.xyz"
-        },
-        {
-            "type": "SOCKS",
-            "ip": "127.0.0.1",
-            "port": 1090,
-            "area": "!CN&&US",
-            "only_area_ip": true,
-            "priority": 0,
-            "real_server_host": "fm1-1.sstr-api.xyz",
-            "whitelist": "hanime.tv"
-        },
-        {
-            "type": "SOCKS",
-            "ip": "127.0.0.1",
-            "port": 1091,
-            "area": "!CN&&US",
-            "only_area_ip": true,
-            "priority": 0,
-            "real_server_host": "fm1-2.sstr-api.xyz",
-            "whitelist": "hanime.tv"
         }
     ],
     "so_timeout": 600000,
