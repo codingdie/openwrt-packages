@@ -15,7 +15,7 @@
             "area": "!CN",
             "only_area_ip": true,
             "priority": 1,
-            "real_server_host": "os2-1.sstr-api.xyz"
+            "real_server_host": "xxxx.xyz"
         }
     ],
     "so_timeout": 600000,
