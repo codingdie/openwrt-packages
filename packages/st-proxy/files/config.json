@@ -15,6 +15,7 @@
             "area": "!CN",
             "only_area_ip": true,
             "priority": 1,
+            "whitelist": []
         }
     ],
     "so_timeout": 600000,
