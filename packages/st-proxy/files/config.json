@@ -4,12 +4,12 @@
     "log": {
         "level": 0,
         "raw_log_server": {
-            "ip": "192.168.31.10",
+            "ip": "192.168.31.20",
             "port": 30500,
             "tag": "st-proxy"
         },
         "apm_log_server": {
-            "ip": "192.168.31.10",
+            "ip": "192.168.31.20",
             "port": 30501
         }
     },
@@ -22,7 +22,7 @@
         },
         {
             "type": "SOCKS",
-            "ip": "192.168.31.10",
+            "ip": "192.168.31.20",
             "port": 1080,
             "area": "!CN",
             "only_area_ip": true,
@@ -30,7 +30,7 @@
         },
         {
             "type": "SOCKS",
-            "ip": "192.168.31.10",
+            "ip": "192.168.31.20",
             "port": 1081,
             "area": "!CN",
             "only_area_ip": true,
@@ -38,7 +38,7 @@
         },
         {
             "type": "SOCKS",
-            "ip": "192.168.31.10",
+            "ip": "192.168.31.20",
             "port": 1090,
             "area": "!CN&&US",
             "only_area_ip": true,
@@ -49,7 +49,7 @@
         },
         {
             "type": "SOCKS",
-            "ip": "192.168.31.10",
+            "ip": "192.168.31.20",
             "port": 1091,
             "area": "!CN&&US",
             "only_area_ip": true,
@@ -68,6 +68,8 @@
         "ty1-2.nrojat.com",
         "fm1-1.nrojat.com",
         "fm1-2.nrojat.com",
-        "codingdie.com"
+        "fm1-3.nrojat.com",
+        "fm1-4.nrojat.com",
+        "home.codingdie.com"
     ]
 }
