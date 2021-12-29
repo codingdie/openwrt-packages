@@ -5,30 +5,7 @@
 'require tools.widgets as widgets';
 'require fs';
 'require uci';
-//	[Widget, Option, Title, Description, {Param: 'Value'}],
-var basicFields = [
-	[form.Flag, 'enabled', _('开启'), null, { datatype: 'bool' }],
-	[form.Value, 'ip', _('绑定地址'), _('ServerAddr specifies the address of the server to connect to.<br>By default, this value is "0.0.0.0".'), { datatype: 'ipaddr' }],
-	[form.Value, 'port', _('绑定端口'), _('ServerPort specifies the port to connect to the server on.<br>By default, this value is 7000.'), { datatype: 'port' }],
-	[form.Value, 'dns_cache_expire', _('过期时间(秒)'), _('DNS记录过期时间，默认10分钟'), { datatype: 'uinteger' }],
-];
-var dnsServerFields = [
-	[form.ListValue, 'type', _('DNS协议类型'), null, { values: ['UDP', 'TCP', 'TCP_SSL'] }],
-	[form.Value, 'ip', _('IP'), null, { datatype: 'ipaddr' }],
-	[form.Value, 'port', _('端口'), null, { datatype: 'port' }],
-	[form.Value, 'dns_cache_expire', _('过期时间'), null, { datatype: 'uinteger' }],
-	[form.Value, 'area', _('地区'), null, {}],
-	[form.Flag, 'only_area_ip', '限定地区', null, { datatype: 'bool' }],
-	[form.Value, 'timeout', _('超时时间(ms)'), null, { datatype: 'uinteger' }],
 
-];
-var logFields = [
-	[form.Value, 'level', _('日志级别'), _('0-4, DEBUG/INFO/WARN/ERROR'), { datatype: 'uinteger' }],
-	[form.Value, 'ip', _('日志服务器IP'), null, { datatype: 'ipaddr', subPath: 'raw_log_server' }],
-	[form.Value, 'port', _('日志服务器端口'), null, { datatype: 'port', subPath: 'raw_log_server' }],
-	[form.Value, 'ip', _('APM日志服务器IP'), null, { datatype: 'ipaddr', subPath: 'apm_log_server' }],
-	[form.Value, 'port', _('APM日志服务器端口'), null, { datatype: 'port', subPath: 'apm_log_server' }]
-];
 function setParams(o, params) {
 	if (!params) return;
 	for (var key in params) {
@@ -72,8 +49,8 @@ function defFields(s, opts) {
 	}
 }
 
-function initUCIFromJson(name, stype, json, fields) {
-	let sid = uci.add(name, stype)
+function initUCIFromJson(sname, stype, json, fields) {
+	let sid = uci.add(sname, stype)
 	fields.forEach((item) => {
 		let name = item[1];
 		let value = json[item[1]];
@@ -81,7 +58,7 @@ function initUCIFromJson(name, stype, json, fields) {
 			name = item[4]['subPath'] + "_" + name;
 			value = json[item[4]['subPath']][item[1]];
 		}
-		uci.set("st-dns", sid, name, value)
+		uci.set(sname, sid, name, value)
 	})
 }
 
@@ -104,6 +81,9 @@ function getJsonFromUCIByType(sname, stype, fields) {
 		let key = field[1];
 		let pKey = field[4]['subPath'];
 		if (pKey != undefined) {
+			if (json[pKey] == undefined) {
+				json[pKey] = {}
+			}
 			json[pKey][key] = uci.get_first(sname, stype, pKey + "_" + key)
 		} else {
 			json[key] = uci.get_first(sname, stype, key)
@@ -155,6 +135,7 @@ function getJsonArrayFromUCI(name, stype, fields) {
 		})
 		result.push(serverJson)
 	})
+	console.log(result)
 	return result;
 }
 
@@ -170,44 +151,37 @@ function typeFormat(obj, field) {
 		obj[name] = obj[name] === '1'
 	}
 }
+
+//	[Widget, Option, Title, Description, {Param: 'Value'}],
+var basicFields = [
+	[form.Flag, 'enabled', _('开启'), null, { datatype: 'bool' }],
+	[form.Value, 'ip', _('绑定地址'), _('ServerAddr specifies the address of the server to connect to.<br>By default, this value is "0.0.0.0".'), { datatype: 'ipaddr' }],
+	[form.Value, 'port', _('绑定端口'), _('ServerPort specifies the port to connect to the server on.<br>By default, this value is 7000.'), { datatype: 'port' }],
+	[form.Value, 'dns_cache_expire', _('过期时间(秒)'), _('DNS记录过期时间，默认10分钟'), { datatype: 'uinteger' }],
+];
+var dnsServerFields = [
+	[form.ListValue, 'type', _('DNS协议类型'), null, { values: ['UDP', 'TCP', 'TCP_SSL'] }],
+	[form.Value, 'ip', _('IP'), null, { datatype: 'ipaddr' }],
+	[form.Value, 'port', _('端口'), null, { datatype: 'port' }],
+	[form.Value, 'dns_cache_expire', _('过期时间'), null, { datatype: 'uinteger' }],
+	[form.Value, 'area', _('地区'), null, {}],
+	[form.Flag, 'only_area_ip', '限定地区', null, { datatype: 'bool' }],
+	[form.Value, 'timeout', _('超时时间(ms)'), null, { datatype: 'uinteger' }],
+	[form.DynamicList, 'whitelist', _('白名单'), null, {}]
+
+];
+var logFields = [
+	[form.Value, 'level', _('日志级别'), _('0-4, DEBUG/INFO/WARN/ERROR'), { datatype: 'uinteger' }],
+	[form.Value, 'ip', _('日志服务器IP'), null, { datatype: 'ipaddr', subPath: 'raw_log_server' }],
+	[form.Value, 'port', _('日志服务器端口'), null, { datatype: 'port', subPath: 'raw_log_server' }],
+	[form.Value, 'ip', _('APM日志服务器IP'), null, { datatype: 'ipaddr', subPath: 'apm_log_server' }],
+	[form.Value, 'port', _('APM日志服务器端口'), null, { datatype: 'port', subPath: 'apm_log_server' }]
+];
+
 function getServerId(server) {
 	return server['ip'].replaceAll('.', "_") + "_" + server.port;
 }
 const json_config_file = "/etc/st/dns/config.json"
-
-function onEditWhitelist(param) {
-	let sid = param.path[3].getAttribute("data-section-id");
-	let server = getJsonFromUCIById("st-dns", sid, dnsServerFields);
-	let serverId = getServerId(server);
-	let inputId = serverId + "_whitelist";
-	let filePath = "/etc/st/dns/whitelist/" + serverId;
-	L.resolveDefault(fs.read_direct(filePath, 'text'), '').then((fileData) => {
-		L.ui.showModal(_('域名白名单(' + serverId + ')'), [
-			E('div', { 'class': 'left', 'style': 'display:flex; flex-direction:column' }, [
-				E('label', { 'class': 'cbi-input-text', 'style': 'padding-top:.5em' }, [
-					E('textarea', { 'style': 'width:100%;resize: none', 'id': inputId }, [
-						fileData
-					])
-				])
-			]),
-			E('div', { 'class': 'right' }, [
-				E('button', {
-					'class': 'btn',
-					'click': L.hideModal
-				}, _('Cancel')),
-				' ',
-				E('button', {
-					'class': 'btn cbi-button-action',
-					'click': ui.createHandlerFn(this, function (ev) {
-						fs.write(filePath, document.getElementById(inputId).value);
-						L.hideModal();
-					})
-				}, _('保存'))
-			])
-		]);
-	});
-
-};
 return view.extend({
 	config: null,
 	load: function () {
@@ -217,8 +191,12 @@ return view.extend({
 			initUCIFromJson("st-dns", "basic", data, basicFields)
 			initUCIFromJsonArray("st-dns", "server", data['servers'], dnsServerFields)
 			initUCIFromJson("st-dns", "log", data['log'], logFields)
-			uci.save()
-			return uci.apply();
+
+			return uci.save().then(() => {
+				return uci.apply().then(() => {
+					return uci.load("dhcp")
+				});
+			})
 		})
 	},
 	render: function () {
@@ -239,7 +217,6 @@ return view.extend({
 		tab.anonymous = true;
 		tab.sortable = true;
 		tab.nodescriptions = true
-		tab.extedit = onEditWhitelist
 		defFields(tab, dnsServerFields);
 
 		//日志配置
@@ -261,14 +238,24 @@ return view.extend({
 			initJsonFromUCI("st-dns", "log", config['log'], logFields);
 
 			let enabled = config['enabled'];
-			console.log(JSON.stringify(config, null, 2))
 			fs.write(json_config_file, JSON.stringify(config, null, 2));
+			fs.write("/etc/config/dnsmasq.servers", "server=" + config['ip']);
 			let conmmand = 'restart'
 			if (!enabled) {
 				conmmand = 'stop'
+				uci.unset_first("dhcp", "dnsmasq", "serversfile")
+				uci.set_first("dhcp", "dnsmasq", "noresolv", "0")
+				uci.set_first("dhcp", "dnsmasq", "resolvfile", "/tmp/resolv.conf.auto")
+			} else {
+				uci.set_first("dhcp", "dnsmasq", "serversfile", "/etc/config/dnsmasq.servers")
+				uci.set_first("dhcp", "dnsmasq", "noresolv", "1")
 			}
-			return fs.exec_direct("/etc/init.d/st-dns", [conmmand]).then(result => {
-				ui.changes.apply()
+			uci.save().then(result1 => {
+				return fs.exec_direct("/etc/init.d/st-dns", [conmmand]).then(result => {
+					return fs.exec_direct("/etc/init.d/dnsmasq", ["realod"]);
+				}).then(() => {
+					ui.changes.apply()
+				})
 			})
 		});
 	},

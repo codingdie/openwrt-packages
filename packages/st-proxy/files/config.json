@@ -56,5 +56,6 @@
     "whitelist": [
         "01.example.com",
         "02.example.com"
-    ]
+    ],
+    "enabled": true
 }

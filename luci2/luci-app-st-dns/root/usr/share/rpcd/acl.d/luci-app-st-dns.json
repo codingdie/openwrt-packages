@@ -3,9 +3,12 @@
 		"description": "Grant access to LuCI app st-dns",
 		"read": {
 			"uci": [
-				"st-dns"
+				"st-dns",
+				"dhcp"
 			],
-			"cgi-io": [ "exec" ],
+			"cgi-io": [
+				"exec"
+			],
 			"file": {
 				"/etc/st/dns/*": [
 					"read"
@@ -13,18 +16,27 @@
 				"/etc/config/st-dns": [
 					"read"
 				],
-				"/etc/init.d/st-dns" : [ "exec" ]
+				"/etc/init.d/st-dns": [
+					"exec"
+				],
+				"/etc/init.d/dnsmasq": [
+					"exec"
+				]
 			}
 		},
 		"write": {
 			"uci": [
-				"st-dns"
+				"st-dns",
+				"dhcp"
 			],
 			"file": {
 				"/etc/st/dns/*": [
 					"write"
 				],
 				"/etc/config/st-dns": [
+					"write"
+				],
+				"/etc/config/dnsmasq.servers": [
 					"write"
 				]
 			}

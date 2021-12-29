@@ -5,32 +5,7 @@
 'require tools.widgets as widgets';
 'require fs';
 'require uci';
-//	[Widget, Option, Title, Description, {Param: 'Value'}],
-var basicFields = [
-	[form.Flag, 'enabled', _('开启'), null, { datatype: 'bool' }],
-	[form.Value, 'ip', _('绑定地址'), null, { datatype: 'ipaddr', readonly: true }],
-	[form.Value, 'port', _('绑定端口'), null, { datatype: 'port', readonly: true }],
-	[form.Value, 'so_timeout', _('传输超时(ms)'), null, { datatype: 'uinteger' }],
-	[form.Value, 'connect_timeout', _('链接超时(ms)'), null, { datatype: 'uinteger' }],
-	[form.Value, 'parallel', _('IO线程数'), null, { datatype: 'uinteger' }],
-	[form.Value, 'dns', _('DNS服务器'), _('指定域名解析用的服务器，建议设为ST-DNS所在主机IP'), { datatype: 'ipaddr' }],
-	[form.DynamicList, 'whitelist', _('白名单'), null, {}]
-];
-var tunnelField = [
-	[form.ListValue, 'type', _('隧道类型'), null, { values: ['SOCKS', 'DIRECT'] }],
-	[form.ListValue, 'area', _('地区'), null, { values: ['CN', 'US', 'JP'] }],
-	[form.Value, 'ip', _('隧道IP'), null, { datatype: 'ipaddr' }],
-	[form.Value, 'port', _('隧道端口'), null, { datatype: 'port' }],
-	[form.DynamicList, 'whitelist', _('白名单'), null, {}]
 
-];
-var logFields = [
-	[form.Value, 'level', _('日志级别'), _('0-4, DEBUG/INFO/WARN/ERROR'), { datatype: 'uinteger' }],
-	[form.Value, 'ip', _('日志服务器IP'), null, { datatype: 'ipaddr', subPath: 'raw_log_server' }],
-	[form.Value, 'port', _('日志服务器端口'), null, { datatype: 'port', subPath: 'raw_log_server' }],
-	[form.Value, 'ip', _('APM日志服务器IP'), null, { datatype: 'ipaddr', subPath: 'apm_log_server' }],
-	[form.Value, 'port', _('APM日志服务器端口'), null, { datatype: 'port', subPath: 'apm_log_server' }]
-];
 function setParams(o, params) {
 	if (!params) return;
 	for (var key in params) {
@@ -176,6 +151,36 @@ function typeFormat(obj, field) {
 		obj[name] = obj[name] === '1'
 	}
 }
+
+
+//	[Widget, Option, Title, Description, {Param: 'Value'}],
+var basicFields = [
+	[form.Flag, 'enabled', _('开启'), null, { datatype: 'bool' }],
+	[form.Value, 'ip', _('绑定地址'), null, { datatype: 'ipaddr', readonly: true }],
+	[form.Value, 'port', _('绑定端口'), null, { datatype: 'port', readonly: true }],
+	[form.Value, 'so_timeout', _('传输超时(ms)'), null, { datatype: 'uinteger' }],
+	[form.Value, 'connect_timeout', _('链接超时(ms)'), null, { datatype: 'uinteger' }],
+	[form.Value, 'parallel', _('IO线程数'), null, { datatype: 'uinteger' }],
+	[form.Value, 'dns', _('DNS服务器'), _('指定域名解析用的服务器，建议设为ST-DNS所在主机IP'), { datatype: 'ipaddr' }],
+	[form.DynamicList, 'whitelist', _('白名单'), null, {}]
+];
+var tunnelField = [
+	[form.ListValue, 'type', _('隧道类型'), null, { values: ['SOCKS', 'DIRECT'] }],
+	[form.ListValue, 'area', _('地区'), null, { values: ['CN', 'US', 'JP'] }],
+	[form.Value, 'ip', _('隧道IP'), null, { datatype: 'ipaddr' }],
+	[form.Value, 'port', _('隧道端口'), null, { datatype: 'port' }],
+	[form.DynamicList, 'whitelist', _('白名单'), null, {}]
+
+];
+var logFields = [
+	[form.Value, 'level', _('日志级别'), _('0-4, DEBUG/INFO/WARN/ERROR'), { datatype: 'uinteger' }],
+	[form.Value, 'ip', _('日志服务器IP'), null, { datatype: 'ipaddr', subPath: 'raw_log_server' }],
+	[form.Value, 'port', _('日志服务器端口'), null, { datatype: 'port', subPath: 'raw_log_server' }],
+	[form.Value, 'ip', _('APM日志服务器IP'), null, { datatype: 'ipaddr', subPath: 'apm_log_server' }],
+	[form.Value, 'port', _('APM日志服务器端口'), null, { datatype: 'port', subPath: 'apm_log_server' }]
+];
+
+
 function getServerId(server) {
 	return server['ip'].replaceAll('.', "_") + "_" + server.port;
 }

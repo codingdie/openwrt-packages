@@ -1,1 +1,1 @@
-# st-dns-luci
+# codingdie's openwrt/luci packages
