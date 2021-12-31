@@ -244,11 +244,13 @@ return view.extend({
 			if (!enabled) {
 				conmmand = 'stop'
 				uci.unset_first("dhcp", "dnsmasq", "serversfile")
+				uci.unset_first("dhcp", "dnsmasq", "cachesize")
 				uci.set_first("dhcp", "dnsmasq", "noresolv", "0")
 				uci.set_first("dhcp", "dnsmasq", "resolvfile", "/tmp/resolv.conf.auto")
 			} else {
 				uci.set_first("dhcp", "dnsmasq", "serversfile", "/etc/config/dnsmasq.servers")
 				uci.set_first("dhcp", "dnsmasq", "noresolv", "1")
+				uci.set_first("dhcp", "dnsmasq", "cachesize", "0")
 			}
 			uci.save().then(result1 => {
 				return fs.exec_direct("/etc/init.d/st-dns", [conmmand]).then(result => {

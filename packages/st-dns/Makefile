@@ -46,14 +46,9 @@ define Package/st-dns/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_DIR) $(1)/etc/st/dns
 	$(INSTALL_DIR) $(1)/etc/st/dns/service
-	$(INSTALL_DIR) $(1)/etc/st/area-ips
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/st-dns $(1)/usr/sbin/st-dns
 	$(INSTALL_CONF) ./files/config.json $(1)/etc/st/dns/config.json
-	$(INSTALL_CONF) $(PKG_INSTALL_DIR)/usr/etc/st/area-ips/CN $(1)/etc/st/area-ips/CN
-	$(INSTALL_CONF) $(PKG_INSTALL_DIR)/usr/etc/st/area-ips/US $(1)/etc/st/area-ips/US
-	$(INSTALL_CONF) $(PKG_INSTALL_DIR)/usr/etc/st/area-ips/JP $(1)/etc/st/area-ips/JP
-	$(INSTALL_CONF) $(PKG_INSTALL_DIR)/usr/etc/st/area-ips/LAN $(1)/etc/st/area-ips/LAN
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/etc/st/dns/service/start.sh $(1)/etc/st/dns/service/start.sh
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/etc/st/dns/service/stop.sh $(1)/etc/st/dns/service/stop.sh
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/etc/st/dns/service/st-dns $(1)/etc/st/dns/service/st-dns

@@ -47,7 +47,6 @@ define Package/st-proxy/install
 	$(INSTALL_DIR) $(1)/etc/st/proxy
 	$(INSTALL_DIR) $(1)/etc/st/proxy/service
 	$(INSTALL_DIR) $(1)/etc/st/proxy/nat
-	$(INSTALL_DIR) $(1)/etc/st/area-ips
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/st-proxy $(1)/usr/sbin/st-proxy
 	$(INSTALL_CONF) ./files/config.json $(1)/etc/st/proxy/config.json
