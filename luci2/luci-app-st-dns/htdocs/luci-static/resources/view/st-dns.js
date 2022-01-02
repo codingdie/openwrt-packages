@@ -27,6 +27,7 @@ function setParams(o, params) {
 				o.depends.apply(o, args);
 			}
 		} else {
+			console.log(key)
 			o[key] = params[key];
 		}
 	}
@@ -155,19 +156,19 @@ function typeFormat(obj, field) {
 //	[Widget, Option, Title, Description, {Param: 'Value'}],
 var basicFields = [
 	[form.Flag, 'enabled', _('开启'), null, { datatype: 'bool' }],
-	[form.Value, 'ip', _('绑定地址'), _('ServerAddr specifies the address of the server to connect to.<br>By default, this value is "0.0.0.0".'), { datatype: 'ipaddr' }],
-	[form.Value, 'port', _('绑定端口'), _('ServerPort specifies the port to connect to the server on.<br>By default, this value is 7000.'), { datatype: 'port' }],
+	[form.Value, 'ip', _('绑定地址'), null, {readonly: true , datatype: 'ipaddr' }],
+	[form.Value, 'port', _('绑定端口'), null, {readonly: true , datatype: 'port' }],
 	[form.Value, 'dns_cache_expire', _('过期时间(秒)'), _('DNS记录过期时间，默认10分钟'), { datatype: 'uinteger' }],
+	[form.Flag, 'area_resolve_optimize', _('解析自适应优化'), _('必需安装运行st-proxy才能开启此选项'), { datatype: 'bool' }],
 ];
 var dnsServerFields = [
-	[form.ListValue, 'type', _('DNS协议类型'), null, { values: ['UDP', 'TCP', 'TCP_SSL'] }],
-	[form.Value, 'ip', _('IP'), null, { datatype: 'ipaddr' }],
-	[form.Value, 'port', _('端口'), null, { datatype: 'port' }],
-	[form.Value, 'dns_cache_expire', _('过期时间'), null, { datatype: 'uinteger' }],
-	[form.Value, 'area', _('地区'), null, {}],
-	[form.Flag, 'only_area_ip', '限定地区', null, { datatype: 'bool' }],
-	[form.Value, 'timeout', _('超时时间(ms)'), null, { datatype: 'uinteger' }],
-	[form.DynamicList, 'whitelist', _('白名单'), null, {}]
+	[form.ListValue, 'type', _('协议类型'), _('DNS协议类型'), { values: ['UDP', 'TCP', 'TCP_SSL'], width: 100 }],
+	[form.Value, 'ip', _('IP'), null, { datatype: 'ipaddr', width: 120 }],
+	[form.Value, 'port', _('端口'), null, { datatype: 'port', width: 60 }],
+	[form.Value, 'dns_cache_expire', _('缓存时间(s)'), null, { datatype: 'uinteger', width: 60 }],
+	[form.Value, 'timeout', _('解析超时(ms)'), null, { datatype: 'uinteger', width: 70 }],
+	[form.DynamicList, 'areas', _('地区'), _('此服务器负责解析的地区，支持填写CN/JP/US等2位地区码'), {}],
+	[form.DynamicList, 'whitelist', _('白名单'), _('此白名单的域名强制被此服务器解析'), {}]
 
 ];
 var logFields = [
@@ -216,7 +217,6 @@ return view.extend({
 		tab.addremove = true;
 		tab.anonymous = true;
 		tab.sortable = true;
-		tab.nodescriptions = true
 		defFields(tab, dnsServerFields);
 
 		//日志配置
@@ -227,6 +227,10 @@ return view.extend({
 			document.querySelectorAll("#cbi-st-dns-server .cbi-button-edit").forEach(btn => {
 				btn.innerHTML = '编辑白名单'
 			});
+			document.querySelectorAll(".cbi-dynlist").forEach(item => {
+				item.style.minWidth = "60px"
+			});
+
 			return document;
 		})
 	},

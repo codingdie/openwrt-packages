@@ -161,15 +161,15 @@ var basicFields = [
 	[form.Value, 'so_timeout', _('传输超时(ms)'), null, { datatype: 'uinteger' }],
 	[form.Value, 'connect_timeout', _('链接超时(ms)'), null, { datatype: 'uinteger' }],
 	[form.Value, 'parallel', _('IO线程数'), null, { datatype: 'uinteger' }],
-	[form.Value, 'dns', _('DNS服务器'), _('指定域名解析用的服务器，建议设为ST-DNS所在主机IP'), { datatype: 'ipaddr' }],
+	[form.Value, 'dns', _('DNS服务器'), _('指定域名解析用的服务器，建议设为ST-DNS'), { datatype: 'ipaddr' }],
 	[form.DynamicList, 'whitelist', _('白名单'), null, {}]
 ];
 var tunnelField = [
-	[form.ListValue, 'type', _('隧道类型'), null, { values: ['SOCKS', 'DIRECT'] }],
-	[form.ListValue, 'area', _('地区'), null, { values: ['CN', 'US', 'JP'] }],
-	[form.Value, 'ip', _('隧道IP'), null, { datatype: 'ipaddr' }],
-	[form.Value, 'port', _('隧道端口'), null, { datatype: 'port' }],
-	[form.DynamicList, 'whitelist', _('白名单'), null, {}]
+	[form.ListValue, 'type', _('隧道类型'), _('隧道类型，目前支持直连和SOCKS5'),{ values: ['SOCKS', 'DIRECT'], width: 120 }],
+	[form.Value, 'ip', _('IP'), null, { datatype: 'ipaddr', width: 120 }],
+	[form.Value, 'port', _('端口'), null, { datatype: 'port', width: 60 }],
+	[form.Value, 'area', _('地区'), _('访问此地区时优先使用此隧道，支持填写CN/JP/US等2位地区码'), { width: 150 }],
+	[form.DynamicList, 'whitelist', _('域名白名单'), _('域名白名单，此白名单域名优先使用此隧道'), {}]
 
 ];
 var logFields = [
@@ -237,6 +237,9 @@ return view.extend({
 					})
 
 				}
+			});
+			document.querySelectorAll(".cbi-dynlist").forEach(item => {
+				item.style.minWidth = "60px"
 			});
 			return document;
 		})
