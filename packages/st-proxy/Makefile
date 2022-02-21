@@ -37,7 +37,7 @@ CMAKE_OPTIONS += \
 define Package/st-proxy
   SECTION:=net
   CATEGORY:=codingdie
-  DEPENDS:=+ipset +libstdcpp +libatomic +libopenssl +boost +boost-system +boost-thread +boost-filesystem
+  DEPENDS:=+ipset +libstdcpp +libatomic +libopenssl +boost +boost-system +boost-thread +boost-filesystem +libiconv +boost-locale
   TITLE:=st-proxy
   URL:=https://github.com/codingdie/st-proxy
 endef
