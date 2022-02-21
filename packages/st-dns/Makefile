@@ -37,7 +37,7 @@ CMAKE_OPTIONS += \
 define Package/st-dns
   SECTION:=net
   CATEGORY:=codingdie
-  DEPENDS:=+libstdcpp +libatomic +libopenssl +boost +boost-system +boost-thread +boost-filesystem +libiconv +boost-locale
+  DEPENDS:=+libstdcpp +libatomic +libopenssl +libiconv +boost +boost-system +boost-thread +boost-filesystem  +boost-locale
   TITLE:=st-dns
   URL:=https://github.com/codingdie/st-dns
 endef
