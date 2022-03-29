@@ -19,7 +19,6 @@ PKG_SOURCE_VERSION=LATEST_COMMIT_ID
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
 PKG_BUILD_DEPENDS:=libiconv
-HOST_BUILD_DEPENDS:=libiconv/host
 
 PKG_LICENSE:=GPL-3.0
 PKG_MAINTAINER:=codingdie
@@ -34,11 +33,16 @@ TARGET_LDFLAGS += -latomic
 
 CMAKE_OPTIONS += \
 	-DOPENWRT=ON \
-	
+
+
+
+TARGET_CFLAGS += -I$(STAGING_DIR)/usr/lib/libiconv-full/include -liconv
+TARGET_LDFLAGS += -L$(STAGING_DIR)/usr/lib/libiconv-full/lib
+
 define Package/st-dns
   SECTION:=net
   CATEGORY:=codingdie
-  DEPENDS:=+libstdcpp +libatomic +libopenssl +libiconv-full +boost +boost-system +boost-thread +boost-filesystem  +boost-locale
+  DEPENDS:=+libstdcpp +libatomic +libopenssl +libiconv-full +boost +boost-system +boost-thread +boost-filesystem +boost-locale
   TITLE:=st-dns
   URL:=https://github.com/codingdie/st-dns
 endef
