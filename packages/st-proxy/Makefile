@@ -34,6 +34,11 @@ TARGET_LDFLAGS += -latomic
 CMAKE_OPTIONS += \
 	-DOPENWRT=ON \
 	
+
+TARGET_CFLAGS += -I$(STAGING_DIR)/usr/lib/libiconv-full/include -liconv
+
+TARGET_LDFLAGS += -L$(STAGING_DIR)/usr/lib/libiconv-full/lib
+
 define Package/st-proxy
   SECTION:=net
   CATEGORY:=codingdie
