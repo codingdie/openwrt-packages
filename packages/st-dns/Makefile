@@ -31,18 +31,17 @@ TARGET_CXXFLAGS +=  -O2 -flto
 
 TARGET_LDFLAGS += -latomic
 
-CMAKE_OPTIONS += \
-	-DOPENWRT=ON \
-
+CMAKE_OPTIONS += -DOPENWRT=ON 
 
 
 TARGET_CFLAGS += -I$(STAGING_DIR)/usr/lib/libiconv-full/include -liconv
+
 TARGET_LDFLAGS += -L$(STAGING_DIR)/usr/lib/libiconv-full/lib
 
 define Package/st-dns
   SECTION:=net
   CATEGORY:=codingdie
-  DEPENDS:=+libstdcpp +libatomic +libopenssl +libiconv-full +boost +boost-system +boost-thread +boost-filesystem +boost-locale
+  DEPENDS:=+libstdcpp +libatomic +libopenssl +libiconv-full +boost +boost-system +boost-thread +boost-filesystem +boost-locale +boost-regex
   TITLE:=st-dns
   URL:=https://github.com/codingdie/st-dns
 endef
