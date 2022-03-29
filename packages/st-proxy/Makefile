@@ -26,14 +26,11 @@ PKG_MAINTAINER:=codingdie
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
-#LTO 压缩
 TARGET_CXXFLAGS +=  -O2 -flto
 
 TARGET_LDFLAGS += -latomic
 
-CMAKE_OPTIONS += \
-	-DOPENWRT=ON \
-	
+CMAKE_OPTIONS += -DOPENWRT=ON 
 
 TARGET_CFLAGS += -I$(STAGING_DIR)/usr/lib/libiconv-full/include -liconv
 
