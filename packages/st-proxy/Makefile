@@ -18,7 +18,7 @@ PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION=LATEST_COMMIT_ID
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
-PKG_BUILD_DEPENDS:=
+PKG_BUILD_DEPENDS:=libiconv
 
 PKG_LICENSE:=GPL-3.0
 PKG_MAINTAINER:=codingdie
@@ -37,7 +37,7 @@ CMAKE_OPTIONS += \
 define Package/st-proxy
   SECTION:=net
   CATEGORY:=codingdie
-  DEPENDS:=+ipset +libstdcpp +libatomic +libopenssl +boost +boost-system +boost-thread +boost-filesystem +libiconv +boost-locale
+  DEPENDS:=+libstdcpp +libatomic +libopenssl +libiconv-full +boost +boost-system +boost-thread +boost-filesystem  +boost-locale
   TITLE:=st-proxy
   URL:=https://github.com/codingdie/st-proxy
 endef
