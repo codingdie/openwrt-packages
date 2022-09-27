@@ -34,8 +34,8 @@ define Package/leveldb
   URL:=https://github.com/google/leveldb
 endef
 
-define Package/st-proxy/install
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/local/lib/libleveldb.a $(1)/usr/lib/libleveldb.a 
+define Package/leveldb/install
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/local/lib/libleveldb.a $(1)/usr/local/lib/libleveldb.a 
 endef
 
 $(eval $(call BuildPackage,st-proxy))
