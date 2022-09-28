@@ -35,6 +35,7 @@ define Package/leveldb/install
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(INSTALL_DIR) $(1)/usr/include
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/libleveldb.a $(1)/usr/lib/libleveldb.a 
+  cp -r $(PKG_INSTALL_DIR)/usr/include/leveldb $(1)/usr/include/
 endef
 
 $(eval $(call BuildPackage,leveldb))
