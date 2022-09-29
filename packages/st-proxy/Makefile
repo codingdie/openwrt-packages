@@ -39,7 +39,6 @@ TARGET_LDFLAGS += -L$(STAGING_DIR)/usr/lib/libiconv-full/lib
 define Package/st-proxy
   SECTION:=net
   CATEGORY:=codingdie
-  DEPENDS:=+libstdcpp +libatomic +libopenssl +libiconv-full +boost +boost-system +boost-thread +boost-filesystem  +boost-locale +curl
   TITLE:=st-proxy
   URL:=https://github.com/codingdie/st-proxy
 endef
