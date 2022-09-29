@@ -18,7 +18,7 @@ PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION=LATEST_COMMIT_ID
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
-PKG_BUILD_DEPENDS:=curl leveldb boost boost-system boost-thread boost-filesystem openssl
+PKG_BUILD_DEPENDS:=leveldb
 
 PKG_LICENSE:=GPL-3.0
 PKG_MAINTAINER:=codingdie
@@ -36,7 +36,7 @@ CMAKE_OPTIONS += -DOPENWRT=ON
 define Package/st-proxy
   SECTION:=net
   CATEGORY:=codingdie
-  DEPENDS:=+libstdcpp +libatomic +libopenssl +boost-system +boost-thread +boost-filesystem
+  DEPENDS:=+curl +libstdcpp +libatomic +libopenssl +boost-system +boost-thread +boost-filesystem
   TITLE:=st-proxy
   URL:=https://github.com/codingdie/st-proxy
 endef
