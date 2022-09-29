@@ -28,10 +28,7 @@ include $(INCLUDE_DIR)/cmake.mk
 
 TARGET_CXXFLAGS +=  -O2 -flto
 
-TARGET_LDFLAGS += -latomic
-
 CMAKE_OPTIONS += -DOPENWRT=ON 
-
 
 define Package/st-proxy
   SECTION:=net
