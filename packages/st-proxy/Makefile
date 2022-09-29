@@ -18,7 +18,7 @@ PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_VERSION=LATEST_COMMIT_ID
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 
-PKG_BUILD_DEPENDS:=libiconv curl leveldb
+PKG_BUILD_DEPENDS:=curl leveldb boost boost-system boost-thread boost-filesystem openssl
 
 PKG_LICENSE:=GPL-3.0
 PKG_MAINTAINER:=codingdie
@@ -32,13 +32,11 @@ TARGET_LDFLAGS += -latomic
 
 CMAKE_OPTIONS += -DOPENWRT=ON 
 
-TARGET_CFLAGS += -I$(STAGING_DIR)/usr/lib/libiconv-full/include -liconv
-
-TARGET_LDFLAGS += -L$(STAGING_DIR)/usr/lib/libiconv-full/lib
 
 define Package/st-proxy
   SECTION:=net
   CATEGORY:=codingdie
+  DEPENDS:=+libstdcpp +libatomic +libopenssl +boost-system +boost-thread +boost-filesystem
   TITLE:=st-proxy
   URL:=https://github.com/codingdie/st-proxy
 endef
