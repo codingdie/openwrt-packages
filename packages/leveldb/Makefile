@@ -32,9 +32,9 @@ define Package/leveldb
 endef
 
 define Package/leveldb/install
-  $(INSTALL_DIR) $(1)/usr/lib
-  $(INSTALL_DIR) $(1)/usr/include/leveldb
-  $(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/libleveldb.a $(1)/usr/lib/libleveldb.a
+	$(INSTALL_DIR) $(1)/usr/lib
+	$(INSTALL_DIR) $(1)/usr/include
+	$(CP) -r $(PKG_INSTALL_DIR)/usr/include/leveldb $(1)/usr/include/
 endef
 
 $(eval $(call BuildPackage,leveldb))
