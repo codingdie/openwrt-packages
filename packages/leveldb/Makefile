@@ -12,8 +12,8 @@ PKG_NAME:=leveldb
 PKG_VERSION:=1.23
 PKG_RELEASE:=1.23
 
-PKG_SOURCE:=$(PKG_VERSION)
-PKG_SOURCE_URL:=https://codeload.github.com/google/leveldb/tar.gz/refs/tags
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://codeload.github.com/google/leveldb/tar.gz/refs/tags/${PKG_VERSION}?
 PKG_HASH:=9a37f8a6174f09bd622bc723b55881dc541cd50747cbd08831c2a82d620f6d76
 
 PKG_LICENSE:=GPL-3.0
