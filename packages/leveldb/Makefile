@@ -12,7 +12,9 @@ PKG_NAME:=leveldb
 PKG_VERSION:=1.2.3
 PKG_RELEASE:=1.2.3
 
-PKG_SOURCE_URL:=https://github.com/google/leveldb/archive/refs/tags/1.23.tar.gz
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://github.com/google/leveldb/archive/refs/tags/${PKG_VERSION}.tar.gz
+
 PKG_LICENSE:=GPL-3.0
 PKG_MAINTAINER:=Google
 
