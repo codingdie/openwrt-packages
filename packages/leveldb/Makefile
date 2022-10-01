@@ -10,9 +10,9 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=leveldb
 PKG_VERSION:=1.23
-PKG_RELEASE:=1.23
-
-PKG_SOURCE_URL:=https://github.com/google/leveldb/archive/refs/tags/1.23.tar.gz
+PKG_RELEASE:=${PKG_VERSION}
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
+PKG_SOURCE_URL:=https://github.com/google/leveldb/archive/refs/tags/1.23.tar.gz?
 PKG_HASH:=af989ea7dab5025bf7407c0ad5f7f74ec0010a5b229c8a4812316b9ffff41ce6
 
 PKG_LICENSE:=GPL-3.0
