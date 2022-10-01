@@ -21,7 +21,7 @@ PKG_MAINTAINER:=Google
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
-CMAKE_OPTIONS += -DCMAKE_BUILD_TYPE=Release
+CMAKE_OPTIONS += -DCMAKE_BUILD_TYPE=Release -DLEVELDB_BUILD_TESTS=off  -DLEVELDB_BUILD_BENCHMARKS=off 
 
 define Package/leveldb
   SECTION:=database
