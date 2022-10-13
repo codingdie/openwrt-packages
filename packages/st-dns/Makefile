@@ -34,7 +34,7 @@ CMAKE_OPTIONS += -DOPENWRT=ON
 define Package/st-dns
   SECTION:=net
   CATEGORY:=codingdie
-  DEPENDS:=+curl +libstdcpp +libatomic +libopenssl +boost-system +boost-thread +boost-filesystem
+  DEPENDS:=+curl +libstdcpp +libatomic +libopenssl +boost-system +boost-thread +boost-filesystem +boost-program_options
   TITLE:=st-dns
   URL:=https://github.com/codingdie/st-dns
 endef
