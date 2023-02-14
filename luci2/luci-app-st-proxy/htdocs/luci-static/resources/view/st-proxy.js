@@ -156,6 +156,7 @@ function typeFormat(obj, field) {
 //	[Widget, Option, Title, Description, {Param: 'Value'}],
 var basicFields = [
 	[form.Flag, 'enabled', _('开启'), null, { datatype: 'bool' }],
+	[form.Flag, 'only_proxy_http', _('仅代理HTTP'), null, { datatype: 'bool' }],
 	[form.Value, 'ip', _('绑定地址'), null, { datatype: 'ipaddr', readonly: true }],
 	[form.Value, 'port', _('绑定端口'), null, { datatype: 'port', readonly: true }],
 	[form.Value, 'so_timeout', _('传输超时(ms)'), null, { datatype: 'uinteger' }],
@@ -165,7 +166,7 @@ var basicFields = [
 	[form.DynamicList, 'whitelist', _('白名单'), _('白名单内的ip和域名均不会被代理'), {}]
 ];
 var tunnelField = [
-	[form.ListValue, 'type', _('隧道类型'), _('隧道类型，目前支持直连和SOCKS5'),{ values: ['SOCKS', 'DIRECT'], width: 120 }],
+	[form.ListValue, 'type', _('隧道类型'), _('隧道类型，目前支持直连和SOCKS5'), { values: ['SOCKS', 'DIRECT'], width: 120 }],
 	[form.Value, 'ip', _('IP'), null, { datatype: 'ipaddr', width: 120 }],
 	[form.Value, 'port', _('端口'), null, { datatype: 'port', width: 60 }],
 	[form.Value, 'area', _('隧道地区'), _('隧道地区，支持填写CN/JP/US等2位地区码'), { width: 150 }],
