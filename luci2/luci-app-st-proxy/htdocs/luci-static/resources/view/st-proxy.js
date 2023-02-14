@@ -156,14 +156,14 @@ function typeFormat(obj, field) {
 //	[Widget, Option, Title, Description, {Param: 'Value'}],
 var basicFields = [
 	[form.Flag, 'enabled', _('开启'), null, { datatype: 'bool' }],
-	[form.Flag, 'only_proxy_http', _('只代理HTTP'), null, { datatype: 'bool' }],
+	[form.DynamicList, 'proxy_target', _('代理目标'), _('可填值:all/http/dns/IP地址,可多填'), {}],
 	[form.Value, 'ip', _('绑定地址'), null, { datatype: 'ipaddr', readonly: true }],
 	[form.Value, 'port', _('绑定端口'), null, { datatype: 'port', readonly: true }],
 	[form.Value, 'so_timeout', _('传输超时(ms)'), null, { datatype: 'uinteger' }],
 	[form.Value, 'connect_timeout', _('链接超时(ms)'), null, { datatype: 'uinteger' }],
 	[form.Value, 'parallel', _('IO线程数'), null, { datatype: 'uinteger' }],
-	[form.Value, 'dns', _('DNS服务器'), _('指定域名解析用的服务器，建议设为ST-DNS'), { datatype: 'ipaddr' }],
-	[form.DynamicList, 'whitelist', _('白名单'), _('白名单内的ip和域名均不会被代理'), {}]
+	[form.Value, 'dns', _('DNS服务器'), _('指定域名解析用的服务器，建议设为ST-DNS'), { datatype: 'ipaddr' }]
+
 ];
 var tunnelField = [
 	[form.ListValue, 'type', _('隧道类型'), _('隧道类型，目前支持直连和SOCKS5'), { values: ['SOCKS', 'DIRECT'], width: 120 }],
