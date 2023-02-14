@@ -156,7 +156,7 @@ function typeFormat(obj, field) {
 //	[Widget, Option, Title, Description, {Param: 'Value'}],
 var basicFields = [
 	[form.Flag, 'enabled', _('开启'), null, { datatype: 'bool' }],
-	[form.Flag, 'only_proxy_http', _('仅代理HTTP'), null, { datatype: 'bool' }],
+	[form.Flag, 'only_proxy_http', _('只代理HTTP'), null, { datatype: 'bool' }],
 	[form.Value, 'ip', _('绑定地址'), null, { datatype: 'ipaddr', readonly: true }],
 	[form.Value, 'port', _('绑定端口'), null, { datatype: 'port', readonly: true }],
 	[form.Value, 'so_timeout', _('传输超时(ms)'), null, { datatype: 'uinteger' }],
