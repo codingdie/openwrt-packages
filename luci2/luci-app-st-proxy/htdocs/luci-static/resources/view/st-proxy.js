@@ -163,7 +163,7 @@ var basicFields = [
 	[form.Value, 'parallel', _('IO线程数'), null, { datatype: 'uinteger' }],
 	[form.Value, 'dns', _('DNS服务器'), _('指定域名解析用的服务器，建议设为ST-DNS'), { datatype: 'ipaddr' }],
 	[form.DynamicList, 'proxy_target', _('代理目标'), _('可填值:all/http/dns/IP地址,可多填'), {}],
-	[form.DynamicList, 'whitelist', _('白名单'), _('白名单内的ip和域名均不会被代理'), {}]
+	[form.DynamicList, 'whitelist', _('代理白名单'), _('白名单内的ip和域名均不会被代理'), {}]
 
 ];
 var tunnelField = [
