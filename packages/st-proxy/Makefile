@@ -50,7 +50,6 @@ define Package/st-proxy/install
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/etc/st/proxy/service/stop.sh $(1)/etc/st/proxy/service/stop.sh
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/etc/st/proxy/service/st-proxy $(1)/etc/st/proxy/service/st-proxy
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/etc/st/proxy/service/st-proxy $(1)/etc/init.d/st-proxy
-	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/etc/st/proxy/nat/init.sh $(1)/etc/st/proxy/nat/init.sh
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/etc/st/proxy/nat/rule.sh $(1)/etc/st/proxy/nat/rule.sh
 endef
 
