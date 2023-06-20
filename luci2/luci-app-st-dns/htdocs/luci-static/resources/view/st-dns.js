@@ -27,7 +27,6 @@ function setParams(o, params) {
 				o.depends.apply(o, args);
 			}
 		} else {
-			console.log(key)
 			o[key] = params[key];
 		}
 	}
@@ -51,15 +50,21 @@ function defFields(s, opts) {
 }
 
 function initUCIFromJson(sname, stype, json, fields) {
+	if (json == undefined) {
+		return;
+	}
 	let sid = uci.add(sname, stype)
 	fields.forEach((item) => {
 		let name = item[1];
-		let value = json[item[1]];
-		if (item[4]['subPath'] != undefined) {
-			name = item[4]['subPath'] + "_" + name;
-			value = json[item[4]['subPath']][item[1]];
+		if (name in json) {
+			let value = json[name];
+			if (item[4]['subPath'] != undefined) {
+				name = item[4]['subPath'] + "_" + name;
+				value = json[item[4]['subPath']][item[1]];
+			}
+			uci.set(sname, sid, name, value)
 		}
-		uci.set(sname, sid, name, value)
+
 	})
 }
 
@@ -136,7 +141,6 @@ function getJsonArrayFromUCI(name, stype, fields) {
 		})
 		result.push(serverJson)
 	})
-	console.log(result)
 	return result;
 }
 
@@ -156,8 +160,8 @@ function typeFormat(obj, field) {
 //	[Widget, Option, Title, Description, {Param: 'Value'}],
 var basicFields = [
 	[form.Flag, 'enabled', _('开启'), null, { datatype: 'bool' }],
-	[form.Value, 'ip', _('绑定地址'), null, {readonly: true , datatype: 'ipaddr' }],
-	[form.Value, 'port', _('绑定端口'), null, {readonly: true , datatype: 'port' }],
+	[form.Value, 'ip', _('绑定地址'), null, { readonly: true, datatype: 'ipaddr' }],
+	[form.Value, 'port', _('绑定端口'), null, { readonly: true, datatype: 'port' }],
 	[form.Value, 'dns_cache_expire', _('过期时间(秒)'), _('DNS记录过期时间，默认10分钟'), { datatype: 'uinteger' }],
 	[form.Flag, 'area_resolve_optimize', _('解析自适应优化'), _('必需安装运行st-proxy才能开启此选项'), { datatype: 'bool' }],
 ];
@@ -178,7 +182,10 @@ var logFields = [
 	[form.Value, 'ip', _('APM日志服务器IP'), null, { datatype: 'ipaddr', subPath: 'apm_log_server' }],
 	[form.Value, 'port', _('APM日志服务器端口'), null, { datatype: 'port', subPath: 'apm_log_server' }]
 ];
-
+var ipAreaFields = [
+	[form.Value, 'url', _('接口URL'), null, {}],
+	[form.Value, 'area_json_path', _('地区码JsonPath'), null, {}]
+];
 function getServerId(server) {
 	return server['ip'].replaceAll('.', "_") + "_" + server.port;
 }
@@ -187,11 +194,18 @@ return view.extend({
 	config: null,
 	load: function () {
 		return fs.read_direct(json_config_file, 'json').then((data) => {
+			if (data['area_ip_config'] == undefined) {
+				data['area_ip_config'] = {}
+				data['area_ip_config']['interfaces'] = {}
+			}
+			console.log(data)
+
 			this.config = data;
 			fs.write("/etc/config/st-dns", "");
 			initUCIFromJson("st-dns", "basic", data, basicFields)
 			initUCIFromJsonArray("st-dns", "server", data['servers'], dnsServerFields)
 			initUCIFromJson("st-dns", "log", data['log'], logFields)
+			initUCIFromJson("st-dns", "area_ip_config", data['area_ip_config']['interfaces'], ipAreaFields)
 
 			return uci.save().then(() => {
 				return uci.apply().then(() => {
@@ -207,6 +221,7 @@ return view.extend({
 		root.tab('basicTab', _('基础配置'));
 		root.tab('serverTab', _('DNS服务器'));
 		root.tab('logTab', _('日志配置'));
+		root.tab('areaIPTab', _('IP库配置'));
 
 		//基础配置
 		let tab = root.taboption('basicTab', form.SectionValue, 'basicTab', form.TypedSection, "basic").subsection
@@ -223,6 +238,12 @@ return view.extend({
 		tab = root.taboption('logTab', form.SectionValue, 'logTab', form.TypedSection, 'log', _('日志配置')).subsection;
 		defFields(tab, logFields);
 
+		//IP库配置
+		tab = root.taboption('areaIPTab', form.SectionValue, 'areaIPTab', form.TableSection, 'area_ip_config').subsection
+		tab.addremove = true;
+		tab.anonymous = true;
+		tab.sortable = true;
+		defFields(tab, ipAreaFields);
 		return rform.render().then((document) => {
 			document.querySelectorAll("#cbi-st-dns-server .cbi-button-edit").forEach(btn => {
 				btn.innerHTML = '编辑白名单'
@@ -240,8 +261,13 @@ return view.extend({
 			initJsonFromUCI("st-dns", "basic", config, basicFields);
 			initJsonArrayFromUCI("st-dns", "server", config['servers'], dnsServerFields);
 			initJsonFromUCI("st-dns", "log", config['log'], logFields);
+			config['area_ip_config'] = {};
+			config['area_ip_config']['interfaces'] = []
+			initJsonArrayFromUCI("st-dns", "area_ip_config", config['area_ip_config']['interfaces'], ipAreaFields);
 
 			let enabled = config['enabled'];
+			console.log(config)
+
 			fs.write(json_config_file, JSON.stringify(config, null, 2));
 			fs.write("/etc/config/dnsmasq.servers", "server=" + config['ip']);
 			let conmmand = 'restart'
