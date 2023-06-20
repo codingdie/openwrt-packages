@@ -49,22 +49,16 @@ function defFields(s, opts) {
 	}
 }
 
-function initUCIFromJson(sname, stype, json, fields) {
-	if (json == undefined) {
-		return;
-	}
-	let sid = uci.add(sname, stype)
+function initUCIFromJson(name, stype, json, fields) {
+	let sid = uci.add(name, stype)
 	fields.forEach((item) => {
 		let name = item[1];
-		if (name in json) {
-			let value = json[name];
-			if (item[4]['subPath'] != undefined) {
-				name = item[4]['subPath'] + "_" + name;
-				value = json[item[4]['subPath']][item[1]];
-			}
-			uci.set(sname, sid, name, value)
+		let value = json[item[1]];
+		if (item[4]['subPath'] != undefined) {
+			name = item[4]['subPath'] + "_" + name;
+			value = json[item[4]['subPath']][item[1]];
 		}
-
+		uci.set("st-dns", sid, name, value)
 	})
 }
 
@@ -205,7 +199,7 @@ return view.extend({
 			initUCIFromJson("st-dns", "basic", data, basicFields)
 			initUCIFromJsonArray("st-dns", "server", data['servers'], dnsServerFields)
 			initUCIFromJson("st-dns", "log", data['log'], logFields)
-			initUCIFromJson("st-dns", "area_ip_config", data['area_ip_config']['interfaces'], ipAreaFields)
+			initUCIFromJsonArray("st-dns", "area_ip_config", data['area_ip_config']['interfaces'], ipAreaFields)
 
 			return uci.save().then(() => {
 				return uci.apply().then(() => {
