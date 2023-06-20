@@ -196,7 +196,7 @@ return view.extend({
 		return fs.read_direct(json_config_file, 'json').then((data) => {
 			if (data['area_ip_config'] == undefined) {
 				data['area_ip_config'] = {}
-				data['area_ip_config']['interfaces'] = {}
+				data['area_ip_config']['interfaces'] = []
 			}
 			console.log(data)
 
