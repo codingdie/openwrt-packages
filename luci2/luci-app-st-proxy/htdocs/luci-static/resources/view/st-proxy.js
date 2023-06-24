@@ -181,7 +181,10 @@ var logFields = [
 	[form.Value, 'ip', _('APM日志服务器IP'), null, { datatype: 'ipaddr', subPath: 'apm_log_server' }],
 	[form.Value, 'port', _('APM日志服务器端口'), null, { datatype: 'port', subPath: 'apm_log_server' }]
 ];
-
+var ipAreaFields = [
+	[form.Value, 'url', _('接口URL'), null, {}],
+	[form.Value, 'area_json_path', _('地区码JsonPath'), null, {}]
+];
 
 function getServerId(server) {
 	return server['ip'].replaceAll('.', "_") + "_" + server.port;
@@ -193,11 +196,18 @@ return view.extend({
 	whitelists: {},
 	load: function () {
 		return fs.read_direct(json_config_file, 'json').then((data) => {
+			if (data['area_ip_config'] == undefined) {
+				data['area_ip_config'] = {}
+				data['area_ip_config']['interfaces'] = []
+			}
+			console.log(data)
 			this.config = data;
 			fs.write("/etc/config/st-proxy", "");
 			initUCIFromJson("st-proxy", "basic", data, basicFields)
 			initUCIFromJsonArray("st-proxy", "tunnel", data['tunnels'], tunnelField)
 			initUCIFromJson("st-proxy", "log", data['log'], logFields)
+			initUCIFromJsonArray("st-proxy", "area_ip_config", data['area_ip_config']['interfaces'], ipAreaFields)
+
 			uci.save()
 			return uci.apply();
 		})
@@ -209,6 +219,7 @@ return view.extend({
 		root.tab('basicTab', _('基础配置'));
 		root.tab('tunnelTab', _('隧道配置'));
 		root.tab('logTab', _('日志配置'));
+		root.tab('areaIPTab', _('IP库配置'));
 
 		//基础配置
 		let tab = root.taboption('basicTab', form.SectionValue, 'basicTab', form.TypedSection, "basic").subsection
@@ -225,6 +236,13 @@ return view.extend({
 		//日志配置
 		tab = root.taboption('logTab', form.SectionValue, 'logTab', form.TypedSection, 'log', _('日志配置')).subsection;
 		defFields(tab, logFields);
+
+		//IP库配置
+		tab = root.taboption('areaIPTab', form.SectionValue, 'areaIPTab', form.TableSection, 'area_ip_config').subsection
+		tab.addremove = true;
+		tab.anonymous = true;
+		tab.sortable = true;
+		defFields(tab, ipAreaFields);
 
 		return rform.render().then((document) => {
 			document.querySelectorAll("#cbi-st-proxy-tunnel .cbi-section-table-row").forEach(row => {
@@ -252,6 +270,7 @@ return view.extend({
 			initJsonFromUCI("st-proxy", "basic", config, basicFields);
 			initJsonArrayFromUCI("st-proxy", "tunnel", config['tunnels'], tunnelField);
 			initJsonFromUCI("st-proxy", "log", config['log'], logFields);
+			initJsonArrayFromUCI("st-proxy", "area_ip_config", config['area_ip_config']['interfaces'], ipAreaFields);
 
 			let enabled = config['enabled'];
 			console.log(JSON.stringify(config, null, 2))
