@@ -274,7 +274,6 @@ return view.extend({
 			} else {
 				uci.set_first("dhcp", "dnsmasq", "serversfile", "/etc/config/dnsmasq.servers")
 				uci.set_first("dhcp", "dnsmasq", "noresolv", "1")
-				uci.set_first("dhcp", "dnsmasq", "cachesize", "0")
 			}
 			uci.save().then(result1 => {
 				return fs.exec_direct("/etc/init.d/st-dns", [conmmand]).then(result => {
