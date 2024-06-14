@@ -176,10 +176,6 @@ var tunnelField = [
 ];
 var logFields = [
 	[form.Value, 'level', _('日志级别'), _('0-4, DEBUG/INFO/WARN/ERROR'), { datatype: 'uinteger' }],
-	[form.Value, 'ip', _('日志服务器IP'), null, { datatype: 'ipaddr', subPath: 'raw_log_server' }],
-	[form.Value, 'port', _('日志服务器端口'), null, { datatype: 'port', subPath: 'raw_log_server' }],
-	[form.Value, 'ip', _('APM日志服务器IP'), null, { datatype: 'ipaddr', subPath: 'apm_log_server' }],
-	[form.Value, 'port', _('APM日志服务器端口'), null, { datatype: 'port', subPath: 'apm_log_server' }]
 ];
 var ipAreaFields = [
 	[form.Value, 'url', _('接口URL'), null, {}],

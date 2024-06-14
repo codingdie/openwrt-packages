@@ -255,9 +255,6 @@ return view.extend({
 			config['area_ip_config']['interfaces'] = []
 			initJsonArrayFromUCI("st-dns", "area_ip_config", config['area_ip_config']['interfaces'], ipAreaFields);
 
-			let enabled = config['enabled'];
-			console.log(config)
-
 			fs.write(json_config_file, JSON.stringify(config, null, 2));
 			fs.write("/etc/config/dnsmasq.servers", "server=" + config['ip']);
 			let conmmand = 'restart'
