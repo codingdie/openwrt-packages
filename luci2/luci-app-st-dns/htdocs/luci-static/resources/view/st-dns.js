@@ -258,7 +258,7 @@ return view.extend({
 			fs.write(json_config_file, JSON.stringify(config, null, 2));
 			fs.write("/etc/config/dnsmasq.servers", "server=" + config['ip']);
 			let conmmand = 'restart'
-			if (!enabled) {
+			if (!config['enabled']) {
 				conmmand = 'stop'
 				uci.unset_first("dhcp", "dnsmasq", "serversfile")
 				uci.unset_first("dhcp", "dnsmasq", "cachesize")
