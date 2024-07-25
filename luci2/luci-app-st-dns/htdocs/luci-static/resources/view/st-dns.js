@@ -157,7 +157,6 @@ var basicFields = [
 	[form.Value, 'ip', _('绑定地址'), null, { readonly: true, datatype: 'ipaddr' }],
 	[form.Value, 'port', _('绑定端口'), null, { readonly: true, datatype: 'port' }],
 	[form.Value, 'dns_cache_expire', _('过期时间(秒)'), _('DNS记录过期时间，默认10分钟'), { datatype: 'uinteger' }],
-	[form.Flag, 'area_resolve_optimize', _('解析自适应优化'), _('必需安装运行st-proxy才能开启此选项'), { datatype: 'bool' }],
 ];
 var dnsServerFields = [
 	[form.ListValue, 'type', _('协议类型'), _('DNS协议类型'), { values: ['UDP', 'TCP', 'TCP_SSL'], width: 100 }],
@@ -165,6 +164,7 @@ var dnsServerFields = [
 	[form.Value, 'port', _('端口'), null, { datatype: 'port', width: 60 }],
 	[form.Value, 'dns_cache_expire', _('缓存时间(s)'), null, { datatype: 'uinteger', width: 60 }],
 	[form.Value, 'timeout', _('解析超时(ms)'), null, { datatype: 'uinteger', width: 70 }],
+	[form.Flag, 'area_resolve_optimize', _('解析自适应优化'), _('必需安装运行st-proxy才能开启此选项'), { datatype: 'bool' }],
 	[form.DynamicList, 'areas', _('地区'), _('此服务器负责解析的地区，支持填写CN/JP/US等2位地区码'), {}],
 	[form.DynamicList, 'whitelist', _('白名单'), _('此白名单的域名强制被此服务器解析'), {}]
 
