@@ -1,1 +1,1 @@
-# codingdie's openwrt/luci packages > 19
+# codingdie's openwrt/luci packages >= 19
