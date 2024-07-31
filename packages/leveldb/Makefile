@@ -30,6 +30,13 @@ define Package/leveldb
   URL:=https://github.com/google/leveldb
 endef
 
+define Package/leveldb/install
+	$(INSTALL_DIR) $(1)/usr/include/
+	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
+	$(INSTALL_DIR) $(1)/usr/lib/
+	$(CP) -r $(PKG_INSTALL_DIR)/usr/lib/* $(1)/usr/lib/
+endef
+
 define Build/InstallDev
 	$(INSTALL_DIR) $(1)/usr/include/
 	$(CP) $(PKG_INSTALL_DIR)/usr/include/* $(1)/usr/include/
