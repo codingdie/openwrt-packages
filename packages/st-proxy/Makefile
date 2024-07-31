@@ -33,7 +33,7 @@ CMAKE_OPTIONS += -DOPENWRT=ON
 define Package/st-proxy
   SECTION:=net
   CATEGORY:=codingdie
-  DEPENDS:=+curl +libstdcpp +libatomic +libopenssl +boost-system +boost-thread +boost-filesystem +boost-program_options +boost-log +boost-date_time +boost-regex +libprotobuf-lite
+  DEPENDS:=+curl +libstdcpp +libatomic +libopenssl +boost-system +boost-thread +boost-filesystem +boost-program_options +boost-log +boost-date_time +boost-regex +protobuf-lite +leveldb
   TITLE:=st-proxy
   URL:=https://github.com/codingdie/st-proxy
 endef
