@@ -5,6 +5,85 @@
 'require tools.widgets as widgets';
 'require fs';
 'require uci';
+'require rpc';
+
+var callAnalyseTunnel = rpc.declare({
+	object: 'st-proxy',
+	method: 'analyse_tunnel',
+	expect: { result: '' }
+});
+
+var callAnalyseIpTunnels = rpc.declare({
+	object: 'st-proxy',
+	method: 'analyse_ip_tunnels',
+	params: ['ip'],
+	expect: { result: '' }
+});
+
+var callBlacklist = rpc.declare({
+	object: 'st-proxy',
+	method: 'blacklist',
+	expect: { result: '' }
+});
+
+var callSessionList = rpc.declare({
+	object: 'st-proxy',
+	method: 'session_list',
+	expect: { result: '' }
+});
+
+var callResolveDomain = rpc.declare({
+	object: 'st-proxy',
+	method: 'resolve_domain',
+	params: ['domain'],
+	expect: { result: '' }
+});
+
+function parseTabularData(text) {
+	if (!text || text.trim() === '') {
+		return [];
+	}
+
+	var lines = text.trim().split('\n');
+	var rows = [];
+
+	for (var i = 0; i < lines.length; i++) {
+		var line = lines[i].trim();
+		if (line) {
+			var cols = line.split('\t').map(function(col) {
+				return col.trim();
+			});
+			rows.push(cols);
+		}
+	}
+
+	return rows;
+}
+
+function createTable(headers, rows, emptyText) {
+	if (!rows || rows.length === 0) {
+		return E('div', { 'class': 'cbi-section' }, [
+			E('p', {}, emptyText || _('无数据'))
+		]);
+	}
+
+	var tableRows = rows.map(function(row) {
+		return E('tr', { 'class': 'tr' },
+			row.map(function(cell) {
+				return E('td', { 'class': 'td' }, cell || '-');
+			})
+		);
+	});
+
+	return E('div', { 'class': 'table cbi-section-table' }, [
+		E('div', { 'class': 'tr table-titles' },
+			headers.map(function(header) {
+				return E('div', { 'class': 'th' }, header);
+			})
+		),
+		tableRows
+	]);
+}
 
 function setParams(o, params) {
 	if (!params) return;
@@ -191,13 +270,21 @@ return view.extend({
 	config: null,
 	whitelists: {},
 	load: function () {
-		return fs.read_direct(json_config_file, 'json').then((data) => {
+		return Promise.all([
+			fs.read_direct(json_config_file, 'json'),
+			callAnalyseTunnel(),
+			callBlacklist()
+		]).then((results) => {
+			var data = results[0];
 			if (data['area_ip_config'] == undefined) {
 				data['area_ip_config'] = {}
 				data['area_ip_config']['interfaces'] = []
 			}
 			console.log(data)
 			this.config = data;
+			this.tunnelAnalyseData = results[1];
+			this.blacklistData = results[2];
+
 			fs.write("/etc/config/st-proxy", "");
 			initUCIFromJson("st-proxy", "basic", data, basicFields)
 			initUCIFromJsonArray("st-proxy", "tunnel", data['tunnels'], tunnelField)
@@ -216,6 +303,7 @@ return view.extend({
 		root.tab('tunnelTab', _('隧道配置'));
 		root.tab('logTab', _('日志配置'));
 		root.tab('areaIPTab', _('IP库配置'));
+		root.tab('analyseTab', _('分析'));
 
 		//基础配置
 		let tab = root.taboption('basicTab', form.SectionValue, 'basicTab', form.TypedSection, "basic").subsection
@@ -239,6 +327,171 @@ return view.extend({
 		tab.anonymous = true;
 		tab.sortable = true;
 		defFields(tab, ipAreaFields);
+
+		// 分析 Tab
+		var analyseSection = root.taboption('analyseTab', form.DummyValue, '_analyse');
+		analyseSection.rawhtml = true;
+		analyseSection.render = L.bind(function() {
+			var tunnelRows = parseTabularData(this.tunnelAnalyseData);
+			var blacklistRows = parseTabularData(this.blacklistData);
+
+			return E('div', { 'class': 'cbi-section' }, [
+				// DNS 解析区域
+				E('div', { 'class': 'cbi-section' }, [
+					E('h3', {}, _('DNS 解析')),
+					E('div', { 'class': 'cbi-value' }, [
+						E('label', { 'class': 'cbi-value-title' }, _('域名')),
+						E('div', { 'class': 'cbi-value-field' }, [
+							E('input', {
+								'type': 'text',
+								'class': 'cbi-input-text',
+								'id': 'analyse-domain-input',
+								'placeholder': 'www.google.com'
+							}),
+							E('button', {
+								'class': 'cbi-button cbi-button-apply',
+								'style': 'margin-left: 10px',
+								'click': function() {
+									var domain = document.getElementById('analyse-domain-input').value;
+									if (!domain) {
+										ui.addNotification(null, E('p', _('请输入域名')), 'error');
+										return;
+									}
+
+									ui.showModal(_('DNS 解析结果'), [
+										E('p', { 'class': 'spinning' }, _('正在解析...'))
+									]);
+
+									callResolveDomain(domain).then(function(resolveResult) {
+										var resolveRows = parseTabularData(resolveResult);
+
+										var ips = [];
+										if (resolveRows.length > 0 && resolveRows[0].length >= 5) {
+											ips = resolveRows[0][4].split(',').filter(function(ip) {
+												return ip.trim() !== '';
+											});
+										}
+
+										var content = [
+											E('h4', {}, _('DNS 解析')),
+											createTable(
+												[_('DNS'), _('域名'), _('过期时间'), _('是否置信'), _('IPS'), _('是否过期')],
+												resolveRows,
+												_('解析失败')
+											)
+										];
+
+										if (ips.length > 0) {
+											content.push(E('h4', { 'style': 'margin-top: 20px' }, _('IP 隧道分析')));
+
+											var ipPromises = ips.map(function(ip) {
+												return callAnalyseIpTunnels(ip.trim()).then(function(result) {
+													var rows = parseTabularData(result);
+													return {
+														ip: ip.trim(),
+														rows: rows
+													};
+												});
+											});
+
+											Promise.all(ipPromises).then(function(ipResults) {
+												ipResults.forEach(function(ipResult) {
+													content.push(
+														E('h5', {}, ipResult.ip),
+														createTable(
+															[_('序号'), _('隧道'), _('地区'), _('分数'), _('成功'), _('失败'), _('平均首包耗时'), _('过期时间(分钟)')],
+															ipResult.rows,
+															_('无数据')
+														)
+													);
+												});
+
+												ui.showModal(_('DNS 解析结果'), [
+													E('div', {}, content),
+													E('div', { 'class': 'right' }, [
+														E('button', {
+															'class': 'btn',
+															'click': ui.hideModal
+														}, _('关闭'))
+													])
+												]);
+											});
+										} else {
+											ui.showModal(_('DNS 解析结果'), [
+												E('div', {}, content),
+												E('div', { 'class': 'right' }, [
+													E('button', {
+														'class': 'btn',
+														'click': ui.hideModal
+													}, _('关闭'))
+												])
+											]);
+										}
+									}).catch(function(err) {
+										ui.hideModal();
+										ui.addNotification(null, E('p', _('解析失败: %s').format(err.message)), 'error');
+									});
+								}
+							}, _('解析'))
+						])
+					])
+				]),
+
+				// 隧道质量分析区域
+				E('div', { 'class': 'cbi-section', 'style': 'margin-top: 20px' }, [
+					E('h3', {}, _('隧道质量分析')),
+					createTable(
+						[_('隧道'), _('地区'), _('成功'), _('失败'), _('平均首包耗时'), _('失败IPS'), _('过期时间(分钟)')],
+						tunnelRows,
+						_('无隧道数据')
+					),
+					E('button', {
+						'class': 'cbi-button cbi-button-apply',
+						'style': 'margin-top: 10px',
+						'click': function() {
+							ui.showModal(_('刷新中'), [
+								E('p', { 'class': 'spinning' }, _('正在刷新数据...'))
+							]);
+
+							callAnalyseTunnel().then(function(result) {
+								ui.hideModal();
+								window.location.reload();
+							}).catch(function(err) {
+								ui.hideModal();
+								ui.addNotification(null, E('p', _('刷新失败: %s').format(err.message)), 'error');
+							});
+						}
+					}, _('刷新'))
+				]),
+
+				// 黑名单区域
+				E('div', { 'class': 'cbi-section', 'style': 'margin-top: 20px' }, [
+					E('h3', {}, _('黑名单')),
+					createTable(
+						[_('IP'), _('域名')],
+						blacklistRows,
+						_('黑名单为空')
+					),
+					E('button', {
+						'class': 'cbi-button cbi-button-apply',
+						'style': 'margin-top: 10px',
+						'click': function() {
+							ui.showModal(_('刷新中'), [
+								E('p', { 'class': 'spinning' }, _('正在刷新数据...'))
+							]);
+
+							callBlacklist().then(function(result) {
+								ui.hideModal();
+								window.location.reload();
+							}).catch(function(err) {
+								ui.hideModal();
+								ui.addNotification(null, E('p', _('刷新失败: %s').format(err.message)), 'error');
+							});
+						}
+					}, _('刷新'))
+				])
+			]);
+		}, this);
 
 		return rform.render().then((document) => {
 			document.querySelectorAll("#cbi-st-proxy-tunnel .cbi-section-table-row").forEach(row => {

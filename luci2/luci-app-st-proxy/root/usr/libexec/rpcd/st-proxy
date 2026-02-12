@@ -1,0 +1,70 @@
+#!/bin/sh
+# RPC backend for st-proxy analysis
+
+. /usr/share/libubox/jshn.sh
+
+case "$1" in
+	list)
+		json_init
+		json_add_object "analyse_tunnel"
+		json_close_object
+		json_add_object "analyse_ip_tunnels"
+		json_add_string "ip" "string"
+		json_close_object
+		json_add_object "blacklist"
+		json_close_object
+		json_add_object "session_list"
+		json_close_object
+		json_add_object "resolve_domain"
+		json_add_string "domain" "string"
+		json_close_object
+		json_dump
+	;;
+	call)
+		case "$2" in
+			analyse_tunnel)
+				# 调用 st-proxy console 命令获取隧道分析（UDP 端口 5858）
+				result=$(echo "proxy analyse tunnel" | nc -u -w 2 127.0.0.1 5858 2>/dev/null)
+				json_init
+				json_add_string "result" "$result"
+				json_dump
+			;;
+			analyse_ip_tunnels)
+				read input
+				json_load "$input"
+				json_get_var ip ip
+
+				# 调用 st-proxy console 命令获取 IP 隧道分析（UDP 端口 5858）
+				result=$(echo "proxy analyse ip tunnels --ip=$ip" | nc -u -w 2 127.0.0.1 5858 2>/dev/null)
+				json_init
+				json_add_string "result" "$result"
+				json_dump
+			;;
+			blacklist)
+				# 调用 st-proxy console 命令获取黑名单（UDP 端口 5858）
+				result=$(echo "proxy blacklist" | nc -u -w 2 127.0.0.1 5858 2>/dev/null)
+				json_init
+				json_add_string "result" "$result"
+				json_dump
+			;;
+			session_list)
+				# 调用 st-proxy console 命令获取会话列表（UDP 端口 5858）
+				result=$(echo "proxy session list" | nc -u -w 2 127.0.0.1 5858 2>/dev/null)
+				json_init
+				json_add_string "result" "$result"
+				json_dump
+			;;
+			resolve_domain)
+				read input
+				json_load "$input"
+				json_get_var domain domain
+
+				# 调用 st-dns console 命令解析域名（UDP 端口 5857）
+				result=$(echo "dns resolve --domain=$domain" | nc -u -w 2 127.0.0.1 5857 2>/dev/null)
+				json_init
+				json_add_string "result" "$result"
+				json_dump
+			;;
+		esac
+	;;
+esac

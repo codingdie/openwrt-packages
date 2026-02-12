@@ -6,6 +6,15 @@
 				"st-proxy"
 			],
 			"cgi-io": [ "exec" ],
+			"ubus": {
+				"st-proxy": [
+					"analyse_tunnel",
+					"analyse_ip_tunnels",
+					"blacklist",
+					"session_list",
+					"resolve_domain"
+				]
+			},
 			"file": {
 				"/etc/st/proxy/*": [
 					"read"
