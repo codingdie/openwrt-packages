@@ -169,6 +169,10 @@ var dnsServerFields = [
 	[form.DynamicList, 'whitelist', _('白名单'), _('此白名单的域名强制被此服务器解析'), {}]
 
 ];
+var forceResolveFields = [
+	[form.Value, 'pattern', _('域名模式'), _('支持通配符，如 *.codingdie.com'), { width: 200 }],
+	[form.DynamicList, 'ips', _('IP地址'), _('强制解析到的IP地址列表'), {}]
+];
 var logFields = [
 	[form.Value, 'level', _('日志级别'), _('0-4, DEBUG/INFO/WARN/ERROR'), { datatype: 'uinteger' }]
 ];
@@ -194,6 +198,10 @@ return view.extend({
 			fs.write("/etc/config/st-dns", "");
 			initUCIFromJson("st-dns", "basic", data, basicFields)
 			initUCIFromJsonArray("st-dns", "server", data['servers'], dnsServerFields)
+			if (data['force_resolve_rules'] == undefined) {
+				data['force_resolve_rules'] = []
+			}
+			initUCIFromJsonArray("st-dns", "force_resolve", data['force_resolve_rules'], forceResolveFields)
 			initUCIFromJson("st-dns", "log", data['log'], logFields)
 			initUCIFromJsonArray("st-dns", "area_ip_config", data['area_ip_config']['interfaces'], ipAreaFields)
 
@@ -210,6 +218,7 @@ return view.extend({
 		root.anonymous = true;
 		root.tab('basicTab', _('基础配置'));
 		root.tab('serverTab', _('DNS服务器'));
+		root.tab('forceResolveTab', _('强制解析'));
 		root.tab('logTab', _('日志配置'));
 		root.tab('areaIPTab', _('IP库配置'));
 
@@ -223,6 +232,13 @@ return view.extend({
 		tab.anonymous = true;
 		tab.sortable = true;
 		defFields(tab, dnsServerFields);
+
+		//强制解析配置
+		tab = root.taboption('forceResolveTab', form.SectionValue, 'forceResolveTab', form.TableSection, 'force_resolve').subsection
+		tab.addremove = true;
+		tab.anonymous = true;
+		tab.sortable = true;
+		defFields(tab, forceResolveFields);
 
 		//日志配置
 		tab = root.taboption('logTab', form.SectionValue, 'logTab', form.TypedSection, 'log', _('日志配置')).subsection;
@@ -250,6 +266,7 @@ return view.extend({
 		return this.handleSave(ev).then(function () {
 			initJsonFromUCI("st-dns", "basic", config, basicFields);
 			initJsonArrayFromUCI("st-dns", "server", config['servers'], dnsServerFields);
+			initJsonArrayFromUCI("st-dns", "force_resolve", config['force_resolve_rules'], forceResolveFields);
 			initJsonFromUCI("st-dns", "log", config['log'], logFields);
 			config['area_ip_config'] = {};
 			config['area_ip_config']['interfaces'] = []
