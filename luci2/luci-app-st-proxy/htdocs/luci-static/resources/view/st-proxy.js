@@ -49,7 +49,8 @@ function parseTabularData(text) {
 
 	for (var i = 0; i < lines.length; i++) {
 		var line = lines[i].trim();
-		if (line) {
+		// 跳过 "success" 标志行
+		if (line && line !== 'success') {
 			var cols = line.split('\t').map(function(col) {
 				return col.trim();
 			});
@@ -80,9 +81,8 @@ function createTable(headers, rows, emptyText) {
 			headers.map(function(header) {
 				return E('div', { 'class': 'th' }, header);
 			})
-		),
-		tableRows
-	]);
+		)
+	].concat(tableRows));
 }
 
 function setParams(o, params) {
@@ -303,7 +303,7 @@ return view.extend({
 		root.tab('tunnelTab', _('隧道配置'));
 		root.tab('logTab', _('日志配置'));
 		root.tab('areaIPTab', _('IP库配置'));
-		root.tab('analyseTab', _('分析'));
+		root.tab('analyseTab', _('质量分析'));
 
 		//基础配置
 		let tab = root.taboption('basicTab', form.SectionValue, 'basicTab', form.TypedSection, "basic").subsection
@@ -336,109 +336,8 @@ return view.extend({
 			var blacklistRows = parseTabularData(this.blacklistData);
 
 			return E('div', { 'class': 'cbi-section' }, [
-				// DNS 解析区域
-				E('div', { 'class': 'cbi-section' }, [
-					E('h3', {}, _('DNS 解析')),
-					E('div', { 'class': 'cbi-value' }, [
-						E('label', { 'class': 'cbi-value-title' }, _('域名')),
-						E('div', { 'class': 'cbi-value-field' }, [
-							E('input', {
-								'type': 'text',
-								'class': 'cbi-input-text',
-								'id': 'analyse-domain-input',
-								'placeholder': 'www.google.com'
-							}),
-							E('button', {
-								'class': 'cbi-button cbi-button-apply',
-								'style': 'margin-left: 10px',
-								'click': function() {
-									var domain = document.getElementById('analyse-domain-input').value;
-									if (!domain) {
-										ui.addNotification(null, E('p', _('请输入域名')), 'error');
-										return;
-									}
-
-									ui.showModal(_('DNS 解析结果'), [
-										E('p', { 'class': 'spinning' }, _('正在解析...'))
-									]);
-
-									callResolveDomain(domain).then(function(resolveResult) {
-										var resolveRows = parseTabularData(resolveResult);
-
-										var ips = [];
-										if (resolveRows.length > 0 && resolveRows[0].length >= 5) {
-											ips = resolveRows[0][4].split(',').filter(function(ip) {
-												return ip.trim() !== '';
-											});
-										}
-
-										var content = [
-											E('h4', {}, _('DNS 解析')),
-											createTable(
-												[_('DNS'), _('域名'), _('过期时间'), _('是否置信'), _('IPS'), _('是否过期')],
-												resolveRows,
-												_('解析失败')
-											)
-										];
-
-										if (ips.length > 0) {
-											content.push(E('h4', { 'style': 'margin-top: 20px' }, _('IP 隧道分析')));
-
-											var ipPromises = ips.map(function(ip) {
-												return callAnalyseIpTunnels(ip.trim()).then(function(result) {
-													var rows = parseTabularData(result);
-													return {
-														ip: ip.trim(),
-														rows: rows
-													};
-												});
-											});
-
-											Promise.all(ipPromises).then(function(ipResults) {
-												ipResults.forEach(function(ipResult) {
-													content.push(
-														E('h5', {}, ipResult.ip),
-														createTable(
-															[_('序号'), _('隧道'), _('地区'), _('分数'), _('成功'), _('失败'), _('平均首包耗时'), _('过期时间(分钟)')],
-															ipResult.rows,
-															_('无数据')
-														)
-													);
-												});
-
-												ui.showModal(_('DNS 解析结果'), [
-													E('div', {}, content),
-													E('div', { 'class': 'right' }, [
-														E('button', {
-															'class': 'btn',
-															'click': ui.hideModal
-														}, _('关闭'))
-													])
-												]);
-											});
-										} else {
-											ui.showModal(_('DNS 解析结果'), [
-												E('div', {}, content),
-												E('div', { 'class': 'right' }, [
-													E('button', {
-														'class': 'btn',
-														'click': ui.hideModal
-													}, _('关闭'))
-												])
-											]);
-										}
-									}).catch(function(err) {
-										ui.hideModal();
-										ui.addNotification(null, E('p', _('解析失败: %s').format(err.message)), 'error');
-									});
-								}
-							}, _('解析'))
-						])
-					])
-				]),
-
 				// 隧道质量分析区域
-				E('div', { 'class': 'cbi-section', 'style': 'margin-top: 20px' }, [
+				E('div', { 'class': 'cbi-section' }, [
 					E('h3', {}, _('隧道质量分析')),
 					createTable(
 						[_('隧道'), _('地区'), _('成功'), _('失败'), _('平均首包耗时'), _('失败IPS'), _('过期时间(分钟)')],
@@ -489,6 +388,123 @@ return view.extend({
 							});
 						}
 					}, _('刷新'))
+				]),
+
+				// 连通分析区域
+				E('div', { 'class': 'cbi-section', 'style': 'margin-top: 20px' }, [
+					E('h3', {}, _('连通分析')),
+					E('div', { 'class': 'cbi-value' }, [
+						E('label', { 'class': 'cbi-value-title' }, _('域名/IP')),
+						E('div', { 'class': 'cbi-value-field' }, [
+							E('input', {
+								'type': 'text',
+								'class': 'cbi-input-text',
+								'id': 'analyse-domain-input',
+								'placeholder': 'www.google.com 或 8.8.8.8',
+								'style': 'width: 300px;'
+							}),
+							E('button', {
+								'class': 'cbi-button cbi-button-apply',
+								'style': 'margin-left: 10px',
+								'click': function() {
+									var input = document.getElementById('analyse-domain-input').value.trim();
+									if (!input) {
+										ui.addNotification(null, E('p', _('请输入域名或IP')), 'error');
+										return;
+									}
+
+									var resultContainer = document.getElementById('domain-analyse-result');
+									resultContainer.innerHTML = '<p class="spinning">正在分析...</p>';
+
+									// 判断是否为 IP 地址
+									var isIP = /^(\d{1,3}\.){3}\d{1,3}$/.test(input);
+
+									if (isIP) {
+										// 直接进行 IP 隧道分析
+										callAnalyseIpTunnels(input).then(function(result) {
+											var rows = parseTabularData(result);
+											var content = [
+												E('h4', {}, input),
+												createTable(
+													[_('序号'), _('隧道'), _('地区'), _('分数'), _('成功'), _('失败'), _('平均首包耗时'), _('过期时间(分钟)')],
+													rows,
+													_('无数据')
+												)
+											];
+
+											resultContainer.innerHTML = '';
+											content.forEach(function(elem) {
+												resultContainer.appendChild(elem);
+											});
+										}).catch(function(err) {
+											resultContainer.innerHTML = '<p style="color: red;">分析失败: ' + err.message + '</p>';
+										});
+									} else {
+										// 域名解析 + IP 隧道分析
+										callResolveDomain(input).then(function(resolveResult) {
+											var resolveRows = parseTabularData(resolveResult);
+
+											var ips = [];
+											if (resolveRows.length > 0 && resolveRows[0].length >= 5) {
+												ips = resolveRows[0][4].split(',').filter(function(ip) {
+													return ip.trim() !== '';
+												});
+											}
+
+											var content = [
+												E('h4', {}, _('域名解析')),
+												createTable(
+													[_('DNS'), _('域名'), _('过期时间'), _('是否置信'), _('IPS'), _('是否过期')],
+													resolveRows,
+													_('解析失败')
+												)
+											];
+
+											if (ips.length > 0) {
+												content.push(E('h4', { 'style': 'margin-top: 20px' }, _('IP 隧道分析')));
+
+												var ipPromises = ips.map(function(ip) {
+													return callAnalyseIpTunnels(ip.trim()).then(function(result) {
+														var rows = parseTabularData(result);
+														return {
+															ip: ip.trim(),
+															rows: rows
+														};
+													});
+												});
+
+												Promise.all(ipPromises).then(function(ipResults) {
+													ipResults.forEach(function(ipResult) {
+														content.push(
+															E('h5', {}, ipResult.ip),
+															createTable(
+																[_('序号'), _('隧道'), _('地区'), _('分数'), _('成功'), _('失败'), _('平均首包耗时'), _('过期时间(分钟)')],
+																ipResult.rows,
+																_('无数据')
+															)
+														);
+													});
+
+													resultContainer.innerHTML = '';
+													content.forEach(function(elem) {
+														resultContainer.appendChild(elem);
+													});
+												});
+											} else {
+												resultContainer.innerHTML = '';
+												content.forEach(function(elem) {
+													resultContainer.appendChild(elem);
+												});
+											}
+										}).catch(function(err) {
+											resultContainer.innerHTML = '<p style="color: red;">解析失败: ' + err.message + '</p>';
+										});
+									}
+								}
+							}, _('分析'))
+						])
+					]),
+					E('div', { 'id': 'domain-analyse-result', 'style': 'margin-top: 20px' })
 				])
 			]);
 		}, this);

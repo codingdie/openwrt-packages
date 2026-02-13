@@ -24,7 +24,7 @@ case "$1" in
 		case "$2" in
 			analyse_tunnel)
 				# 调用 st-proxy console 命令获取隧道分析（UDP 端口 5858）
-				result=$(echo "proxy analyse tunnel" | nc -u -w 2 127.0.0.1 5858 2>/dev/null)
+				result=$( (echo "proxy analyse tunnel"; sleep 1) | ncat -u -w 5 127.0.0.1 5858 2>/dev/null)
 				json_init
 				json_add_string "result" "$result"
 				json_dump
@@ -35,21 +35,21 @@ case "$1" in
 				json_get_var ip ip
 
 				# 调用 st-proxy console 命令获取 IP 隧道分析（UDP 端口 5858）
-				result=$(echo "proxy analyse ip tunnels --ip=$ip" | nc -u -w 2 127.0.0.1 5858 2>/dev/null)
+				result=$( (echo "proxy analyse ip tunnels --ip=$ip"; sleep 1) | ncat -u -w 5 127.0.0.1 5858 2>/dev/null)
 				json_init
 				json_add_string "result" "$result"
 				json_dump
 			;;
 			blacklist)
 				# 调用 st-proxy console 命令获取黑名单（UDP 端口 5858）
-				result=$(echo "proxy blacklist" | nc -u -w 2 127.0.0.1 5858 2>/dev/null)
+				result=$( (echo "proxy blacklist"; sleep 1) | ncat -u -w 5 127.0.0.1 5858 2>/dev/null)
 				json_init
 				json_add_string "result" "$result"
 				json_dump
 			;;
 			session_list)
 				# 调用 st-proxy console 命令获取会话列表（UDP 端口 5858）
-				result=$(echo "proxy session list" | nc -u -w 2 127.0.0.1 5858 2>/dev/null)
+				result=$( (echo "proxy session list"; sleep 1) | ncat -u -w 5 127.0.0.1 5858 2>/dev/null)
 				json_init
 				json_add_string "result" "$result"
 				json_dump
@@ -59,8 +59,8 @@ case "$1" in
 				json_load "$input"
 				json_get_var domain domain
 
-				# 调用 st-dns console 命令解析域名（UDP 端口 5857）
-				result=$(echo "dns resolve --domain=$domain" | nc -u -w 2 127.0.0.1 5857 2>/dev/null)
+				# 调用 st-dns console 命令解析域名（UDP 端口 5757）
+				result=$( (echo "dns resolve --domain=$domain"; sleep 1) | ncat -u -w 5 127.0.0.1 5757 2>/dev/null)
 				json_init
 				json_add_string "result" "$result"
 				json_dump
