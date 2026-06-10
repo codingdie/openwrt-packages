@@ -36,6 +36,7 @@
         }
     ],
     "dns_cache_expire": 600,
+    "forward_max_running": 32,
     "area_resolve_optimize": false,
     "log": {
         "level": 1,
