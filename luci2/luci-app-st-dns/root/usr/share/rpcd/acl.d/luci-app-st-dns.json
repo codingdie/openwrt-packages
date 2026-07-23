@@ -9,6 +9,11 @@
 			"cgi-io": [
 				"exec"
 			],
+			"ubus": {
+				"st-dns": [
+					"dns_queue_list"
+				]
+			},
 			"file": {
 				"/etc/st/dns/*": [
 					"read"

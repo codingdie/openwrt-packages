@@ -5,6 +5,66 @@
 'require tools.widgets as widgets';
 'require fs';
 'require uci';
+'require rpc';
+
+var callDnsQueueList = rpc.declare({
+	object: 'st-dns',
+	method: 'dns_queue_list',
+	expect: { result: '' }
+});
+
+function parseTabularData(text) {
+	if (!text || text.trim() === '') {
+		return [];
+	}
+
+	var lines = text.trim().split('\n');
+	var rows = [];
+	var headerSkipped = false;
+
+	for (var i = 0; i < lines.length; i++) {
+		var line = lines[i].trim();
+		// 跳过 "success" 标志行和空行
+		if (!line || line === 'success') {
+			continue;
+		}
+		// 跳过表头行
+		if (!headerSkipped) {
+			headerSkipped = true;
+			continue;
+		}
+		var cols = line.split(/\s{2,}/).map(function(col) {
+			return col.trim();
+		});
+		rows.push(cols);
+	}
+
+	return rows;
+}
+
+function createTable(headers, rows, emptyText) {
+	if (!rows || rows.length === 0) {
+		return E('div', { 'class': 'cbi-section' }, [
+			E('p', {}, emptyText || _('无数据'))
+		]);
+	}
+
+	var tableRows = rows.map(function(row) {
+		return E('div', { 'class': 'tr' },
+			row.map(function(cell) {
+				return E('div', { 'class': 'td' }, cell || '-');
+			})
+		);
+	});
+
+	return E('div', { 'class': 'table cbi-section-table' }, [
+		E('div', { 'class': 'tr table-titles' },
+			headers.map(function(header) {
+				return E('div', { 'class': 'th' }, header);
+			})
+		)
+	].concat(tableRows));
+}
 
 function setParams(o, params) {
 	if (!params) return;
@@ -186,8 +246,14 @@ function getServerId(server) {
 const json_config_file = "/etc/st/dns/config.json"
 return view.extend({
 	config: null,
+	queueData: null,
 	load: function () {
-		return fs.read_direct(json_config_file, 'json').then((data) => {
+		return Promise.all([
+			fs.read_direct(json_config_file, 'json'),
+			callDnsQueueList()
+		]).then((results) => {
+			var data = results[0];
+			this.queueData = results[1];
 			if (data['area_ip_config'] == undefined) {
 				data['area_ip_config'] = {}
 				data['area_ip_config']['interfaces'] = []
@@ -221,6 +287,7 @@ return view.extend({
 		root.tab('forceResolveTab', _('强制解析'));
 		root.tab('logTab', _('日志配置'));
 		root.tab('areaIPTab', _('IP库配置'));
+		root.tab('debugTab', _('调试'));
 
 		//基础配置
 		let tab = root.taboption('basicTab', form.SectionValue, 'basicTab', form.TypedSection, "basic").subsection
@@ -250,6 +317,40 @@ return view.extend({
 		tab.anonymous = true;
 		tab.sortable = true;
 		defFields(tab, ipAreaFields);
+
+		// 调试 Tab
+		var debugSection = root.taboption('debugTab', form.DummyValue, '_debug');
+		debugSection.rawhtml = true;
+		debugSection.render = L.bind(function() {
+			var queueRows = parseTabularData(this.queueData);
+
+			return E('div', { 'class': 'cbi-section' }, [
+				E('h3', {}, _('记录同步队列')),
+				createTable(
+					[_('域名'), _('入队时间'), _('等待时长'), _('状态')],
+					queueRows,
+					_('队列为空')
+				),
+				E('button', {
+					'class': 'cbi-button cbi-button-apply',
+					'style': 'margin-top: 10px',
+					'click': function() {
+						ui.showModal(_('刷新中'), [
+							E('p', { 'class': 'spinning' }, _('正在刷新数据...'))
+						]);
+
+						callDnsQueueList().then(function(result) {
+							ui.hideModal();
+							window.location.reload();
+						}).catch(function(err) {
+							ui.hideModal();
+							ui.addNotification(null, E('p', _('刷新失败: %s').format(err.message)), 'error');
+						});
+					}
+				}, _('刷新'))
+			]);
+		}, this);
+
 		return rform.render().then((document) => {
 			document.querySelectorAll("#cbi-st-dns-server .cbi-button-edit").forEach(btn => {
 				btn.innerHTML = '编辑白名单'
