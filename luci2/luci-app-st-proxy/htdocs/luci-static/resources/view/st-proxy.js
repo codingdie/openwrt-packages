@@ -250,7 +250,8 @@ var tunnelField = [
 	[form.Value, 'port', _('端口'), null, { datatype: 'port', width: 60 }],
 	[form.Value, 'area', _('隧道地区'), _('隧道地区，支持填写CN/JP/US等2位地区码'), { width: 150 }],
 	[form.DynamicList, 'whitelist', _('域名白名单'), _('域名白名单，此白名单域名优先使用此隧道'), {}],
-	[form.DynamicList, 'proxy_areas', _('代理地区'), _('此隧道代理地区，支持填写CN/JP/US等2位地区码(隧道地区默认会被代理)'), {}]
+	[form.DynamicList, 'proxy_areas', _('代理地区'), _('此隧道代理地区，支持填写CN/JP/US等2位地区码(隧道地区默认会被代理)'), {}],
+	[form.Value, 'http_check_url', _('健康检查URL'), _('连通性检测目标URL，留空则自动选择：CN/DIRECT默认https://www.baidu.com，其他默认https://www.google.com'), {}]
 
 ];
 var logFields = [
