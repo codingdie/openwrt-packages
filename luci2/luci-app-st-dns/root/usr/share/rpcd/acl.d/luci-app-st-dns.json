@@ -11,7 +11,8 @@
 			],
 			"ubus": {
 				"st-dns": [
-					"dns_queue_list"
+					"dns_queue_list",
+					"auto_lan_ip"
 				]
 			},
 			"file": {

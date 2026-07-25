@@ -8,12 +8,20 @@ case "$1" in
 		json_init
 		json_add_object "dns_queue_list"
 		json_close_object
+		json_add_object "auto_lan_ip"
+		json_close_object
 		json_dump
 	;;
 	call)
 		case "$2" in
 			dns_queue_list)
 				result=$( (echo "dns queue list"; sleep 1) | ncat -u -w 5 127.0.0.1 5757 2>/dev/null)
+				json_init
+				json_add_string "result" "$result"
+				json_dump
+			;;
+			auto_lan_ip)
+				result=$( (echo "dns auto lan ip"; sleep 1) | ncat -u -w 5 127.0.0.1 5757 2>/dev/null)
 				json_init
 				json_add_string "result" "$result"
 				json_dump

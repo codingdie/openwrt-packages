@@ -14,6 +14,12 @@ var callDnsQueueList = rpc.declare({
 	expect: { result: '' }
 });
 
+var callAutoLanIp = rpc.declare({
+	object: 'st-dns',
+	method: 'auto_lan_ip',
+	expect: { result: '' }
+});
+
 const AUTO_LAN_IP = 'AUTO_LAN_IP';
 
 function validateDnsServerIp(section_id, value) {
@@ -260,13 +266,16 @@ const json_config_file = "/etc/st/dns/config.json"
 return view.extend({
 	config: null,
 	queueData: null,
+	autoLanIp: null,
 	load: function () {
 		return Promise.all([
 			fs.read_direct(json_config_file, 'json'),
-			callDnsQueueList()
+			callDnsQueueList(),
+			callAutoLanIp()
 		]).then((results) => {
 			var data = results[0];
 			this.queueData = results[1];
+			this.autoLanIp = results[2];
 			if (data['area_ip_config'] == undefined) {
 				data['area_ip_config'] = {}
 				data['area_ip_config']['interfaces'] = []
@@ -305,6 +314,10 @@ return view.extend({
 		//基础配置
 		let tab = root.taboption('basicTab', form.SectionValue, 'basicTab', form.TypedSection, "basic").subsection
 		defFields(tab, basicFields);
+		let autoLanIpStatus = tab.option(form.DummyValue, '_auto_lan_ip', _('AUTO_LAN_IP'));
+		autoLanIpStatus.cfgvalue = L.bind(function() {
+			return this.autoLanIp || _('未获取到运行状态');
+		}, this);
 
 		//DNS服务器配置
 		tab = root.taboption('serverTab', form.SectionValue, 'serverTab', form.TableSection, 'server').subsection
