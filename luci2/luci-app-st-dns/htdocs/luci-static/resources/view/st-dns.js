@@ -6,12 +6,25 @@
 'require fs';
 'require uci';
 'require rpc';
+'require validation';
 
 var callDnsQueueList = rpc.declare({
 	object: 'st-dns',
 	method: 'dns_queue_list',
 	expect: { result: '' }
 });
+
+const AUTO_LAN_IP = 'AUTO_LAN_IP';
+
+function validateDnsServerIp(section_id, value) {
+	if (value === AUTO_LAN_IP)
+		return true;
+
+	if (validation.parseIPv4(value) || validation.parseIPv6(value))
+		return true;
+
+	return _('请输入有效的 IP 地址，或使用 AUTO_LAN_IP 自动读取 LAN DNS 上游');
+}
 
 function parseTabularData(text) {
 	if (!text || text.trim() === '') {
@@ -220,7 +233,7 @@ var basicFields = [
 ];
 var dnsServerFields = [
 	[form.ListValue, 'type', _('协议类型'), _('DNS协议类型'), { values: ['UDP', 'TCP', 'TCP_SSL'], width: 100 }],
-	[form.Value, 'ip', _('IP'), null, { datatype: 'ipaddr', width: 120 }],
+	[form.Value, 'ip', _('IP'), null, { validate: validateDnsServerIp, width: 120 }],
 	[form.Value, 'port', _('端口'), null, { datatype: 'port', width: 60 }],
 	[form.Value, 'dns_cache_expire', _('缓存时间(s)'), null, { datatype: 'uinteger', width: 60 }],
 	[form.Value, 'timeout', _('解析超时(ms)'), null, { datatype: 'uinteger', width: 70 }],
