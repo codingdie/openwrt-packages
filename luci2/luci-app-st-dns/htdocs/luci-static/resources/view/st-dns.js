@@ -316,7 +316,12 @@ return view.extend({
 		defFields(tab, basicFields);
 		let autoLanIpStatus = tab.option(form.DummyValue, '_auto_lan_ip', _('AUTO_LAN_IP'));
 		autoLanIpStatus.cfgvalue = L.bind(function() {
-			return this.autoLanIp || _('未获取到运行状态');
+			var lines = (this.autoLanIp || '').split('\n').map(function(line) {
+				return line.trim();
+			}).filter(function(line) {
+				return line && line !== 'success';
+			});
+			return lines.join('\n') || _('未获取到运行状态');
 		}, this);
 
 		//DNS服务器配置
