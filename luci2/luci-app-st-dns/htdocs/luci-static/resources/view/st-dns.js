@@ -249,7 +249,8 @@ var dnsServerFields = [
 
 ];
 var forceResolveFields = [
-	[form.Value, 'pattern', _('域名模式'), _('支持通配符，如 *.codingdie.com'), { width: 200 }],
+	[form.Value, 'pattern', _('域名模式'), _('精确域名或通配符，如 *.codingdie.com；与正则表达式二选一'), { width: 200 }],
+	[form.Value, 'regex', _('正则表达式'), _('与域名模式二选一，使用 ECMAScript 语法并完整匹配域名'), { width: 200 }],
 	[form.DynamicList, 'ips', _('IP地址'), _('强制解析到的IP地址列表'), {}]
 ];
 var logFields = [

@@ -35,6 +35,7 @@
             "dns_cache_expire": 600
         }
     ],
+    "force_resolve_rules": [],
     "dns_cache_expire": 600,
     "forward_max_running": 32,
     "console_ip": "127.0.0.1",
