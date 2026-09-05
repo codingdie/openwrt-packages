@@ -197,6 +197,16 @@ function initUCIFromJsonArray(name, stype, jsonArray, fields) {
 	})
 }
 
+function normalizeForceResolveRules(rules) {
+	rules.forEach((rule) => {
+		// 旧 regex 字段在保存后统一为 re: 前缀写法。
+		if (!rule.pattern && rule.regex) {
+			rule.pattern = 're:' + rule.regex;
+		}
+		delete rule.regex;
+	});
+}
+
 function initJsonArrayFromUCI(name, stype, jsonArray, fields) {
 	jsonArray.splice(0, jsonArray.length);
 	getJsonArrayFromUCI(name, stype, fields).forEach(item => {
@@ -249,8 +259,7 @@ var dnsServerFields = [
 
 ];
 var forceResolveFields = [
-	[form.Value, 'pattern', _('域名模式'), _('精确域名或通配符，如 *.codingdie.com；与正则表达式二选一'), { width: 200 }],
-	[form.Value, 'regex', _('正则表达式'), _('与域名模式二选一，使用 ECMAScript 语法并完整匹配域名'), { width: 200 }],
+	[form.Value, 'pattern', _('域名模式'), _('精确：example.com；通配：*.example.com；正则：re:^(api|www)\\.example\\.com$。正则使用 ECMAScript 语法并完整匹配域名'), { rmempty: false, width: 260 }],
 	[form.DynamicList, 'ips', _('IP地址'), _('强制解析到的IP地址列表'), {}]
 ];
 var logFields = [
@@ -290,6 +299,7 @@ return view.extend({
 			if (data['force_resolve_rules'] == undefined) {
 				data['force_resolve_rules'] = []
 			}
+			normalizeForceResolveRules(data['force_resolve_rules']);
 			initUCIFromJsonArray("st-dns", "force_resolve", data['force_resolve_rules'], forceResolveFields)
 			initUCIFromJson("st-dns", "log", data['log'], logFields)
 			initUCIFromJsonArray("st-dns", "area_ip_config", data['area_ip_config']['interfaces'], ipAreaFields)
