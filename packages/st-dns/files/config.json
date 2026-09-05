@@ -35,7 +35,14 @@
             "dns_cache_expire": 600
         }
     ],
-    "force_resolve_rules": [],
+    "force_resolve_rules": [
+        {
+            "pattern": "re:^(?!home\\.codingdie\\.com$)(?:[A-Za-z0-9-]+\\.)*codingdie\\.com$",
+            "ips": [
+                "192.168.31.20"
+            ]
+        }
+    ],
     "dns_cache_expire": 600,
     "forward_max_running": 32,
     "console_ip": "127.0.0.1",
