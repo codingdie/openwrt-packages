@@ -40,11 +40,6 @@ define Package/st-dns
   URL:=https://github.com/codingdie/st-dns
 endef
 
-define Package/st-dns/description
-Smart local DNS server with configurable upstream chains and forced DNS resolution rules.
-Forced resolution supports exact domains, *. wildcards, and re:-prefixed regular expressions.
-endef
-
 define Package/st-dns/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_DIR) $(1)/etc/st/dns
