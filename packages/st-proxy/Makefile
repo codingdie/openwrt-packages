@@ -39,6 +39,12 @@ define Package/st-proxy
   URL:=https://github.com/codingdie/st-proxy
 endef
 
+define Package/st-proxy/description
+  智能 TCP 代理，支持按目标地区和链路质量选择隧道。
+  地区地址库在后台加载，同一地区的加载请求自动去重；
+  下载失败后等待 60 秒再重试，下载期间不阻塞已有地址库查询。
+endef
+
 define Package/st-proxy/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_DIR) $(1)/etc/st/proxy
