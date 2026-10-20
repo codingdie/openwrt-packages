@@ -40,6 +40,12 @@ define Package/st-dns
   URL:=https://github.com/codingdie/st-dns
 endef
 
+define Package/st-dns/description
+  智能 DNS 服务，支持多上游解析及按目标地区筛选结果。
+  地区地址库在后台加载，同一地区的加载请求自动去重；
+  下载失败后等待 60 秒再重试，下载期间不阻塞已有地址库查询。
+endef
+
 define Package/st-dns/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_DIR) $(1)/etc/st/dns
