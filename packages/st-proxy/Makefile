@@ -45,6 +45,10 @@ define Package/st-proxy/description
   下载失败后等待 60 秒再重试，下载期间不阻塞已有地址库查询。
 endef
 
+define Package/st-proxy/conffiles
+/etc/st/proxy/config.json
+endef
+
 define Package/st-proxy/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_DIR) $(1)/etc/st/proxy

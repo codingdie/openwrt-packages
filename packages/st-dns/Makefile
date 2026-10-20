@@ -48,6 +48,10 @@ define Package/st-dns/description
   保留 localhost 域名和显式强制解析规则的回环地址支持。
 endef
 
+define Package/st-dns/conffiles
+/etc/st/dns/config.json
+endef
+
 define Package/st-dns/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_DIR) $(1)/etc/st/dns
